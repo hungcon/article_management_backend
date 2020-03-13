@@ -1,0 +1,29 @@
+{
+  "name": "rss-demo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
+    "cookie-parser": "~1.4.3",
+    "cron": "^1.8.2",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "kafka-node": "^5.0.0",
+    "mongoose": "^5.9.3",
+    "morgan": "~1.9.0",
+    "node-cron": "^2.0.3",
+    "nodemon": "^2.0.2",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "rss-parser": "^3.7.5",
+    "sanitize-html": "^1.22.0",
+    "striptags": "^3.1.1"
+  }
+}
