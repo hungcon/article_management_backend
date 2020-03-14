@@ -10,7 +10,7 @@ var sendMessageToQueue = (message) => {
         partition: 0
     }]
     producer.send(payload, (err, data) =>{
-        console.log(data)
+        //console.log(data)
     })
 }
 

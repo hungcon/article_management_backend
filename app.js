@@ -8,7 +8,8 @@ var mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cron = require('node-cron');
-var  crawl = require('./crawl/crawl');
+var crawl = require('./crawl/crawl');
+var getMessage = require('./crawl/consumer');
 
 var app = express();
 
@@ -25,10 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// var getMessage = require('./crawl/consumer');
-// getMessage();
 
-cron.schedule('*/10 * * * * *', () => {
+
+
+cron.schedule('*/1 * * * *', () => {
   crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
   // crawl('https://vnexpress.net/rss/thoi-su.rss');
   // crawl('https://vnexpress.net/rss/the-gioi.rss');
@@ -43,6 +44,8 @@ cron.schedule('*/10 * * * * *', () => {
   // crawl('https://vnexpress.net/rss/du-lich.rss');
   // crawl('https://vnexpress.net/rss/khoa-hoc.rss');
 });
+
+getMessage();
 
 mongoose.connect('mongodb://localhost:27017/crawler', {useNewUrlParser: true, useUnifiedTopology: true});
 // catch 404 and forward to error handler

@@ -19,10 +19,6 @@ const crawl = async (rss) => {
         documents.push(document)
     }));
     // store(documents);
-    
-
-    // get Message
-    getMessage();
 }
 
 module.exports = crawl; 
