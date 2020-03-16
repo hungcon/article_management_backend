@@ -1,9 +1,7 @@
 let Parser = require('rss-parser');
 let parser = new Parser();
 var getText = require('./getText');
-// var store = require('./store');
 var sendMessageToQueue = require('./producer');
-var getMessage = require('./consumer');
 
 const crawl = async (rss) => {
     let feed = await parser.parseURL(rss);
@@ -15,7 +13,7 @@ const crawl = async (rss) => {
         document.pubDate = item.pubDate;
         document.link = item.link;
         document.text = text;
-        //sendMessageToQueue(document);
+        sendMessageToQueue(document);
         documents.push(document)
     }));
     // store(documents);

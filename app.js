@@ -9,7 +9,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cron = require('node-cron');
 var crawl = require('./crawl/crawl');
-var getMessage = require('./crawl/consumer');
+var consumer = require('./consumer/consumer');
+var consumer1 = require('./consumer/consumer1');
+var consumer2 = require('./consumer/consumer2');
+var consumer3 = require('./consumer/consumer3');
 
 var app = express();
 
@@ -28,25 +31,29 @@ app.use('/users', usersRouter);
 
 
 
-
-cron.schedule('*/1 * * * *', () => {
+cron.schedule('*/15 * * * *', () => {
   crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
-  // crawl('https://vnexpress.net/rss/thoi-su.rss');
-  // crawl('https://vnexpress.net/rss/the-gioi.rss');
-  // crawl('https://vnexpress.net/rss/kinh-doanh.rss');
-  // crawl('https://vnexpress.net/rss/startup.rss');
-  // crawl('https://vnexpress.net/rss/giai-tri.rss');
-  // crawl('https://vnexpress.net/rss/the-thao.rss');
-  // crawl('https://vnexpress.net/rss/phap-luat.rss');
-  // crawl('https://vnexpress.net/rss/giao-duc.rss');
-  // crawl('https://vnexpress.net/rss/suc-khoe.rss');
-  // crawl('https://vnexpress.net/rss/gia-dinh.rss');
-  // crawl('https://vnexpress.net/rss/du-lich.rss');
-  // crawl('https://vnexpress.net/rss/khoa-hoc.rss');
+  crawl('https://vnexpress.net/rss/thoi-su.rss');
+  crawl('https://vnexpress.net/rss/the-gioi.rss');
+  crawl('https://vnexpress.net/rss/kinh-doanh.rss');
+  crawl('https://vnexpress.net/rss/startup.rss');
+  crawl('https://vnexpress.net/rss/giai-tri.rss');
+  crawl('https://vnexpress.net/rss/the-thao.rss');
+  crawl('https://vnexpress.net/rss/phap-luat.rss');
+  crawl('https://vnexpress.net/rss/giao-duc.rss');
+  crawl('https://vnexpress.net/rss/suc-khoe.rss');
+  crawl('https://vnexpress.net/rss/gia-dinh.rss');
+  crawl('https://vnexpress.net/rss/du-lich.rss');
+  crawl('https://vnexpress.net/rss/khoa-hoc.rss');
 });
 
-getMessage();
 
+consumer();
+consumer1();
+consumer2();
+consumer3();
+
+mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost:27017/crawler', {useNewUrlParser: true, useUnifiedTopology: true});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
