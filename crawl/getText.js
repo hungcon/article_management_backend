@@ -9,11 +9,15 @@ const getText = async (link) => {
     var text = rp(options)
         .then(function(html){
         const $ = cheerio.load(html);
-        var text = $('article.content_detail').html();
-        if(text == null){
-            return;
+        var text, content;
+        if($('article.content_detail').html() == null){
+            text = $('div.fck_detail').html();
+        } else if($('div.fck_detail').html() == null){
+            text = $('article.content_detail').html();
+        } else {
+            text = "";
         }
-        var content = cheerio.load(text); 
+        content = cheerio.load(text); 
         content('p.Image').remove();
         content('div.block_tinlienquan_temp').remove();
          // xoá table 
@@ -25,6 +29,7 @@ const getText = async (link) => {
         //content('em').remove();
         return content.text().replace(/\t/g, '').replace(/\n/g, '');
     });
+    console.log(text);
     return text;
 }
 

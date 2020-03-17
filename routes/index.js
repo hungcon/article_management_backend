@@ -82,18 +82,26 @@ router.get('/get-source', function(req, res, next) {
   rp(req.query.url)
   .then(function(html){
     const $ = cheerio.load(html);
-    var text = $('article.content_detail').html();
-    var content = cheerio.load(text); 
-    content('p.Image').remove();
-    content('div.block_tinlienquan_temp').remove();
-    // // xoá table 
-    // //content('table.tbl_insert').remove();
-    
-    //xoá tác giả 
-    content('p').last().remove();
-    //content('strong').remove();
-    //content('em').remove();
-    res.send(content.html())
+        var text, content;
+        if($('article.content_detail').html() == null){
+            text = $('div.fck_detail').html();
+        } else if($('div.fck_detail').html() == null){
+            text = $('article.content_detail').html();
+        } else {
+            text = "";
+        }
+        content = cheerio.load(text); 
+        content('p.Image').remove();
+        content('div.block_tinlienquan_temp').remove();
+         // xoá table 
+         content('table.tbl_insert').remove();
+        
+        //xoá tác giả 
+        content('p').last().remove();
+        //content('strong').remove();
+        //content('em').remove();
+        // return content.text().replace(/\t/g, '').replace(/\n/g, '');
+        res.send(html)
   })
   .catch(function(err){
     console.log(err)
