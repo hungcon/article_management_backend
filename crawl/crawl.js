@@ -5,7 +5,6 @@ var sendMessageToQueue = require('./producer');
 
 const crawl = async (rss) => {
     let feed = await parser.parseURL(rss);
-    var documents = [];
     await Promise.all(feed.items.map(async (item) => {
         var text = await getText(item.link);
         var document = {};
@@ -14,9 +13,7 @@ const crawl = async (rss) => {
         document.link = item.link;
         document.text = text;
         sendMessageToQueue(document);
-        documents.push(document)
     }));
-    // store(documents);
 }
 
 module.exports = crawl; 

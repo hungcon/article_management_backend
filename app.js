@@ -31,27 +31,21 @@ app.use('/users', usersRouter);
 
 
 
-//cron.schedule('*/15 * * * *', () => {
-//   crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
-//   crawl('https://vnexpress.net/rss/thoi-su.rss');
-//   crawl('https://vnexpress.net/rss/the-gioi.rss');
-//   crawl('https://vnexpress.net/rss/kinh-doanh.rss');
-//   crawl('https://vnexpress.net/rss/startup.rss');
-//   crawl('https://vnexpress.net/rss/giai-tri.rss');
-//   crawl('https://vnexpress.net/rss/the-thao.rss');
-//   crawl('https://vnexpress.net/rss/phap-luat.rss');
-//   crawl('https://vnexpress.net/rss/giao-duc.rss');
-//   crawl('https://vnexpress.net/rss/suc-khoe.rss');
-//   crawl('https://vnexpress.net/rss/gia-dinh.rss');
-//   crawl('https://vnexpress.net/rss/du-lich.rss');
-//   crawl('https://vnexpress.net/rss/khoa-hoc.rss');
-// });
+cron.schedule('*/15 * * * *', () => {
+  crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
+  // crawl('https://vnexpress.net/rss/thoi-su.rss');
+  // crawl('https://vnexpress.net/rss/the-gioi.rss');
+  // crawl('https://vnexpress.net/rss/kinh-doanh.rss');
+  // crawl('https://vnexpress.net/rss/startup.rss');
+  // crawl('https://vnexpress.net/rss/giai-tri.rss');
+  // crawl('https://vnexpress.net/rss/the-thao.rss');
+  // crawl('https://vnexpress.net/rss/phap-luat.rss');
+  // crawl('https://vnexpress.net/rss/giao-duc.rss');
+  // crawl('https://vnexpress.net/rss/suc-khoe.rss');
+});
 
 
-// consumer();
-// consumer1();
-// consumer2();
-// consumer3();
+ consumer();
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost:27017/crawler', {useNewUrlParser: true, useUnifiedTopology: true});

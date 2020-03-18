@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
+var ttl = require('mongoose-ttl');
 
-var ArticleSchema = new mongoose.Schema({
+var BackUpSchema = new mongoose.Schema({
     title: {
         type: String,
         unique: true,
@@ -18,6 +19,7 @@ var ArticleSchema = new mongoose.Schema({
     }
 });
 
-var Article = mongoose.model('Article', ArticleSchema);
 
-module.exports = Article;
+var BackUp = mongoose.model('BackUp', BackUpSchema);
+
+module.exports = BackUp;

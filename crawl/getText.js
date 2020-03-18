@@ -29,7 +29,6 @@ const getText = async (link) => {
         //content('em').remove();
         return content.text().replace(/\t/g, '').replace(/\n/g, '');
     });
-    console.log(text);
     return text;
 }
 
