@@ -19,7 +19,7 @@ var BackUpSchema = new mongoose.Schema({
     }
 });
 
-
+BackUpSchema.index({createAt: 1}, {expireAfterSeconds: 60 })
 var BackUp = mongoose.model('BackUp', BackUpSchema);
 
 module.exports = BackUp;

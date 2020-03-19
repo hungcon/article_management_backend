@@ -1,6 +1,7 @@
 var Article = require('../model/article');
+var BackUp = require('../model/backup')
 var checkExist = async function(title) {
-    var count = await Article.countDocuments({title: title})
+    var count = await BackUp.countDocuments({title: title})
     if(count > 0){
         return true;
     }
@@ -9,7 +10,7 @@ var checkExist = async function(title) {
 var saveMessage = async function(message) {
     var messageObj = JSON.parse(message.value);
     var exist = await checkExist(messageObj.title);
-    if(!exist) {
+    if(exist) {
         Article.create(messageObj, function(err){
             if(err) {
                 console.log(err);

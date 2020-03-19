@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var cron = require('node-cron');
 var crawl = require('./crawl/crawl');
+var schedule = require('./crawl/schedule');
 var consumer = require('./consumer/consumer');
 var consumer1 = require('./consumer/consumer1');
 var consumer2 = require('./consumer/consumer2');
@@ -29,10 +30,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+var listRSS = [
+  'https://vnexpress.net/rss/tin-moi-nhat.rss',
+  'https://vnexpress.net/rss/the-gioi.rss',
+  'https://vnexpress.net/rss/thoi-su.rss',
+  'https://vnexpress.net/rss/kinh-doanh.rss',
+  'https://vnexpress.net/rss/startup.rss',
+  'https://vnexpress.net/rss/startup.rss'
+];
 
+//schedule(listRSS)
 
 cron.schedule('*/15 * * * *', () => {
-  crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
+  schedule(listRSS)
+})
+
+// cron.schedule('*/15 * * * * *', () => {
+  // crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
   // crawl('https://vnexpress.net/rss/thoi-su.rss');
   // crawl('https://vnexpress.net/rss/the-gioi.rss');
   // crawl('https://vnexpress.net/rss/kinh-doanh.rss');
@@ -42,10 +56,10 @@ cron.schedule('*/15 * * * *', () => {
   // crawl('https://vnexpress.net/rss/phap-luat.rss');
   // crawl('https://vnexpress.net/rss/giao-duc.rss');
   // crawl('https://vnexpress.net/rss/suc-khoe.rss');
-});
+// });
 
 
- consumer();
+  consumer();
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost:27017/crawler', {useNewUrlParser: true, useUnifiedTopology: true});
