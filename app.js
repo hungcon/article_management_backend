@@ -30,19 +30,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-var listRSS = [
-  'https://vnexpress.net/rss/tin-moi-nhat.rss',
-  'https://vnexpress.net/rss/the-gioi.rss',
-  'https://vnexpress.net/rss/thoi-su.rss',
-  'https://vnexpress.net/rss/kinh-doanh.rss',
-  'https://vnexpress.net/rss/startup.rss',
-  'https://vnexpress.net/rss/startup.rss'
+var source = [
+  {
+    website: "vnexpress",
+    rss: [
+      'https://vnexpress.net/rss/tin-moi-nhat.rss',
+      'https://vnexpress.net/rss/the-gioi.rss',
+      'https://vnexpress.net/rss/thoi-su.rss',
+      'https://vnexpress.net/rss/kinh-doanh.rss',
+      'https://vnexpress.net/rss/startup.rss',
+      'https://vnexpress.net/rss/startup.rss'
+    ],
+    category: "Tin tức"
+  },
+  {
+    website: "vnexpress",
+    rss: [
+      'https://vnexpress.net/rss/tin-moi-nhat.rss',
+      'https://vnexpress.net/rss/the-gioi.rss',
+      'https://vnexpress.net/rss/thoi-su.rss',
+      'https://vnexpress.net/rss/kinh-doanh.rss',
+      'https://vnexpress.net/rss/startup.rss',
+      'https://vnexpress.net/rss/startup.rss'
+    ],
+    category: "Giải trí"
+  }
 ];
 
-//schedule(listRSS)
+// schedule(source)
 
 cron.schedule('*/15 * * * *', () => {
-  schedule(listRSS)
+  schedule(source)
 })
 
 // cron.schedule('*/15 * * * * *', () => {

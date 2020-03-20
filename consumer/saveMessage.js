@@ -15,7 +15,7 @@ var saveMessage = async function(message) {
             if(err) {
                 console.log(err);
             } else {
-                console.log('A - Stored')
+                console.log('A - Storaged')
             }
         })
     }

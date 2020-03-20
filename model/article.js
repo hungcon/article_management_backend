@@ -12,6 +12,9 @@ var ArticleSchema = new mongoose.Schema({
     link: {
         type: String
     },
+    category: {
+        type: Array
+    },
     text: {
         type: String,
         trim: true
