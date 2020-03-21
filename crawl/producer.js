@@ -55,6 +55,14 @@ const addData = (message) => {
 }
 
 const updateCategory = (message) => {
+    var payload = [{
+        topic: "articles",
+        messages: JSON.stringify(message),
+        partition: 0
+    }]
+    producer.send(payload, (err, data) =>{
+        //console.log(data)
+    });
     BackUp.findOneAndUpdate(
         {title: message.title}, 
         {$push: {category: message.category}}, 

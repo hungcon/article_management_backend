@@ -63,23 +63,11 @@ cron.schedule('*/15 * * * *', () => {
   schedule(source)
 })
 
-// cron.schedule('*/15 * * * * *', () => {
-  // crawl('https://vnexpress.net/rss/tin-moi-nhat.rss');
-  // crawl('https://vnexpress.net/rss/thoi-su.rss');
-  // crawl('https://vnexpress.net/rss/the-gioi.rss');
-  // crawl('https://vnexpress.net/rss/kinh-doanh.rss');
-  // crawl('https://vnexpress.net/rss/startup.rss');
-  // crawl('https://vnexpress.net/rss/giai-tri.rss');
-  // crawl('https://vnexpress.net/rss/the-thao.rss');
-  // crawl('https://vnexpress.net/rss/phap-luat.rss');
-  // crawl('https://vnexpress.net/rss/giao-duc.rss');
-  // crawl('https://vnexpress.net/rss/suc-khoe.rss');
-// });
 
-
-  consumer();
+consumer();
 
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.connect('mongodb://localhost:27017/crawler', {useNewUrlParser: true, useUnifiedTopology: true});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

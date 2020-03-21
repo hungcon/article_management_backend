@@ -9,15 +9,18 @@ const getText = async (link) => {
     var text = rp(options)
         .then(function(html){
         const $ = cheerio.load(html);
-        var text, content;
+        let text = ""; 
+        let content = "";
         if($('article.content_detail').html() == null){
             text = $('div.fck_detail').html();
         } else if($('div.fck_detail').html() == null){
             text = $('article.content_detail').html();
-        } else {
-            text = "";
         }
-        content = cheerio.load(text); 
+        if(text == null){
+            content = cheerio.load(""); 
+        } else {
+            content = cheerio.load(text);
+        }
         content('p.Image').remove();
         content('div.block_tinlienquan_temp').remove();
          // xoá table 
