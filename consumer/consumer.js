@@ -8,8 +8,4 @@ const consumer = new Consumer(client, [{ topic: 'articles', partition: 0 }], {
 
 const saveMessage = require('./saveMessage');
 
-const getMessage = () => {
-  consumer.on('message', (message) => saveMessage(message));
-};
-
-module.exports = getMessage;
+consumer.on('message', (message) => saveMessage(message));

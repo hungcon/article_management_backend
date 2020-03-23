@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon app.js",
-    "lint:init": "eslint --init"
+    "lint:init": "eslint --init",
+    "consumer": "node ./consumer/consumer.js"
   },
   "dependencies": {
     "Q": "^1.0.0",

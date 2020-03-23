@@ -11,7 +11,7 @@ const cron = require('node-cron');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const schedule = require('./crawl/schedule');
-const consumer = require('./consumer/consumer');
+// const consumer = require('./consumer/consumer');
 // const consumer1 = require('./consumer/consumer1');
 // const consumer2 = require('./consumer/consumer2');
 // const consumer3 = require('./consumer/consumer3');
@@ -57,8 +57,6 @@ const source = [
 cron.schedule('*/5 * * * *', () => {
   schedule(source);
 });
-
-consumer();
 
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
