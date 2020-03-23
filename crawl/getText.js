@@ -16,7 +16,7 @@ async function getText(link) {
     } else if ($('div.fck_detail').html() == null) {
       body = $('article.content_detail').html();
     }
-    if (text == null) {
+    if (body == null) {
       content = cheerio.load('');
     } else {
       content = cheerio.load(body);

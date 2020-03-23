@@ -44,28 +44,25 @@ const saveMessage = async (message) => {
   }
 };
 
-const storage = (message) => {
-  Article.create(message, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('A - Storaged');
-    }
-  });
+const storage = async (message) => {
+  const result = await Article.create(message);
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Article - Added');
+  }
 };
 
 const update = (message) => {
-  Article.findOneAndUpdate(
+  const result = Article.findOneAndUpdate(
     { title: message.title },
     { $push: { category: message.category } },
-    (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('A- Updated');
-      }
-    },
-  );
+  ).exec();
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Article - Updated');
+  }
 };
 
 module.exports = saveMessage;

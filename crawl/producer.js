@@ -39,7 +39,7 @@ const sendMessageToQueue = async (message) => {
       break;
   }
 };
-const addData = (message) => {
+const addData = async (message) => {
   const payload = [
     {
       topic: 'articles',
@@ -48,18 +48,17 @@ const addData = (message) => {
     },
   ];
   producer.send(payload, (err, data) => {
-    // console.log(data)
+    console.log('Save to queue');
   });
-  BackUp.create(message, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Storaged');
-    }
-  });
+  const result = await BackUp.create(message);
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Added');
+  }
 };
 
-const updateCategory = (message) => {
+const updateCategory = async (message) => {
   const payload = [
     {
       topic: 'articles',
@@ -68,19 +67,17 @@ const updateCategory = (message) => {
     },
   ];
   producer.send(payload, (_err, _data) => {
-    // console.log(data)
+    console.log('Save to queue');
   });
-  BackUp.findOneAndUpdate(
+  const result = await BackUp.findOneAndUpdate(
     { title: message.title },
     { $push: { category: message.category } },
-    function (err) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Updated');
-      }
-    },
-  );
+  ).exec();
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Updated');
+  }
 };
 
 module.exports = sendMessageToQueue;
