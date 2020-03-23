@@ -1,14 +1,15 @@
-let Parser = require('rss-parser');
-let parser = new Parser();
+const Parser = require('rss-parser');
+
+const parser = new Parser();
 
 const crawl = async (rss, category) => {
-    let feed = await parser.parseURL(rss);
-    var listLink = [];
-    feed.items.forEach(item => {
-        item.category = category;
-        listLink.push(item);
-    });
-    return listLink;
-}
+  const feed = await parser.parseURL(rss);
+  const listLink = [];
+  feed.items.forEach((item) => {
+    item.category = category;
+    listLink.push(item);
+  });
+  return listLink;
+};
 
-module.exports = crawl; 
+module.exports = crawl;

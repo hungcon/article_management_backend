@@ -1,14 +1,15 @@
-var kafka = require("kafka-node"),
-  Consumer = kafka.Consumer,
-  client = new kafka.KafkaClient(),
-  consumer = new Consumer(client, [{ topic: "articles", partition: 0 }], {
-    autoCommit: false
-  });
+const kafka = require('kafka-node');
 
-var saveMessage = require('./saveMessage');
-var getMessage = () => {
+const { Consumer } = kafka;
+const client = new kafka.KafkaClient();
+const consumer = new Consumer(client, [{ topic: 'articles', partition: 0 }], {
+  autoCommit: false,
+});
+
+const saveMessage = require('./saveMessage');
+
+const getMessage = () => {
   consumer.on('message', (message) => saveMessage(message));
-}
- 
+};
+
 module.exports = getMessage;
-  

@@ -101,7 +101,7 @@ router.get('/get-source', function(req, res, next) {
         //content('strong').remove();
         //content('em').remove();
         // return content.text().replace(/\t/g, '').replace(/\n/g, '');
-        res.send(html)
+        res.send(content.html())
   })
   .catch(function(err){
     console.log(err)
