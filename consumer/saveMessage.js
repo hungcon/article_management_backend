@@ -53,8 +53,8 @@ const storage = async (message) => {
   }
 };
 
-const update = (message) => {
-  const result = Article.findOneAndUpdate(
+const update = async (message) => {
+  const result = await Article.findOneAndUpdate(
     { title: message.title },
     { $push: { category: message.category } },
   ).exec();
