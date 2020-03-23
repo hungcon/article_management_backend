@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable func-names */
 const createError = require('http-errors');
@@ -11,10 +12,6 @@ const cron = require('node-cron');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const schedule = require('./crawl/schedule');
-// const consumer = require('./consumer/consumer');
-// const consumer1 = require('./consumer/consumer1');
-// const consumer2 = require('./consumer/consumer2');
-// const consumer3 = require('./consumer/consumer3');
 
 const app = express();
 
