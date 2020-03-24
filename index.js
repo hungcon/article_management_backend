@@ -24,6 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+require('dotenv').config();
+require('./models');
+
 const source = [
   {
     website: 'vnexpress',
@@ -51,16 +54,11 @@ const source = [
   },
 ];
 
-cron.schedule('*/5 * * * *', () => {
-  schedule(source);
-});
+// cron.schedule('*/5 * * * *', () => {
+//   schedule(source);
+// });
 
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
-mongoose.connect('mongodb://localhost:27017/crawler', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+schedule(source);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

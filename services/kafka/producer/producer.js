@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 const kafka = require('kafka-node');
-const BackUp = require('../model/backup');
+const BackUp = require('../../../models/backup');
 
 const { Producer } = kafka;
 const client = new kafka.KafkaClient();
