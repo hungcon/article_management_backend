@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 
-const { checkExistInArticle } = require('../../../utils/checkExist');
-const { addArticle, updateArticle } = require('../../../utils/articles');
+const {
+  addArticle,
+  updateArticle,
+  checkExistInArticle,
+} = require('../../article/action');
 
 const saveArticles = async (message) => {
   const messageObj = JSON.parse(message.value);

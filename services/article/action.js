@@ -1,20 +1,26 @@
-const BackUp = require('../models/backup');
-const Article = require('../models/article');
+/* eslint-disable no-console */
+const Article = require('../../models/article');
+const BackUp = require('../../models/backup');
 
-const checkExistInBackUp = async (title, category) => {
-  // return 0 nếu chưa tồn tại trong backup
-  // return 1 nếu đã tồn tại trong backup và category chưa đc thêm
-  // return 2 nếu đã tồn tại trong backup và category đã đc thêm
-  const article = await BackUp.findOne({ title });
-  if (article == null) {
-    return 0;
+const addArticle = async (message) => {
+  const result = await Article.create(message);
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Article - Added');
   }
-  const listCategory = article.category;
-  const checkCategory = listCategory.includes(category);
-  if (!checkCategory) {
-    return 1;
+};
+
+const updateArticle = async (message) => {
+  const result = await Article.findOneAndUpdate(
+    { title: message.title },
+    { $push: { category: message.category } },
+  ).exec();
+  if (!result) {
+    console.log('Error');
+  } else {
+    console.log('Article - Updated');
   }
-  return 2;
 };
 
 const checkExistInArticle = async (title, category) => {
@@ -38,4 +44,4 @@ const checkExistInArticle = async (title, category) => {
   return 3;
 };
 
-module.exports = { checkExistInBackUp, checkExistInArticle };
+module.exports = { addArticle, updateArticle, checkExistInArticle };

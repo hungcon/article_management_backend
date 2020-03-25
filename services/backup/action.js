@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
-const { articlesQueue } = require('../configs');
-const BackUp = require('../models/backup');
+const { articlesQueue } = require('../../configs');
+const BackUp = require('../../models/backup');
 
 const addArticle = async (PRODUCER, message) => {
   const payload = [
@@ -44,4 +44,20 @@ const updateArticle = async (PRODUCER, message) => {
   }
 };
 
-module.exports = { addArticle, updateArticle };
+const checkExistInBackUp = async (title, category) => {
+  // return 0 nếu chưa tồn tại trong backup
+  // return 1 nếu đã tồn tại trong backup và category chưa đc thêm
+  // return 2 nếu đã tồn tại trong backup và category đã đc thêm
+  const article = await BackUp.findOne({ title });
+  if (article == null) {
+    return 0;
+  }
+  const listCategory = article.category;
+  const checkCategory = listCategory.includes(category);
+  if (!checkCategory) {
+    return 1;
+  }
+  return 2;
+};
+
+module.exports = { addArticle, updateArticle, checkExistInBackUp };

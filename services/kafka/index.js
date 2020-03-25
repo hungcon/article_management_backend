@@ -2,8 +2,11 @@
 const kafka = require('kafka-node');
 const consumerProgram = require('./consumer');
 const producerProgram = require('./producer');
-const { addArticle, updateArticle } = require('../../utils/backup');
-const { checkExistInBackUp } = require('../../utils/checkExist');
+const {
+  addArticle,
+  updateArticle,
+  checkExistInBackUp,
+} = require('../backup/action');
 
 const { Consumer } = kafka;
 const { Producer } = kafka;
