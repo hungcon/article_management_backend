@@ -2,16 +2,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable func-names */
 const createError = require('http-errors');
+const http = require('http');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const mongoose = require('mongoose');
 
-const cron = require('node-cron');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const schedule = require('./crawl/schedule');
+
+const job = require('./services/crawl/job');
 
 const app = express();
 
@@ -26,39 +26,6 @@ app.use('/users', usersRouter);
 
 require('dotenv').config();
 require('./models');
-
-const source = [
-  {
-    website: 'vnexpress',
-    rss: [
-      'https://vnexpress.net/rss/tin-moi-nhat.rss',
-      'https://vnexpress.net/rss/the-gioi.rss',
-      'https://vnexpress.net/rss/thoi-su.rss',
-      'https://vnexpress.net/rss/kinh-doanh.rss',
-      'https://vnexpress.net/rss/startup.rss',
-      'https://vnexpress.net/rss/startup.rss',
-    ],
-    category: 'Tin tức',
-  },
-  {
-    website: 'vnexpress',
-    rss: [
-      'https://vnexpress.net/rss/tin-moi-nhat.rss',
-      'https://vnexpress.net/rss/the-gioi.rss',
-      'https://vnexpress.net/rss/thoi-su.rss',
-      'https://vnexpress.net/rss/kinh-doanh.rss',
-      'https://vnexpress.net/rss/startup.rss',
-      'https://vnexpress.net/rss/startup.rss',
-    ],
-    category: 'Giải trí',
-  },
-];
-
-// cron.schedule('*/5 * * * *', () => {
-//   schedule(source);
-// });
-
-schedule(source);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -76,6 +43,10 @@ app.use(function (err, req, res, _next) {
   res.render('error');
 });
 
-app.listen(8000, () => {
-  console.log('Sever is listening on port 8000');
+const { PORT } = process.env;
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
+  console.log(`Sever is listening on port ${PORT}`);
+  job();
 });

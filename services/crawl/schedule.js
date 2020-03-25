@@ -1,6 +1,6 @@
 const getArticles = require('./getArticles');
 const getText = require('./getText');
-const { saveArticlesToQueue } = require('../services/kafka');
+const { saveArticlesToQueue } = require('../kafka');
 
 const schedule = async (source) => {
   const listArticles = await getArticles(source);
