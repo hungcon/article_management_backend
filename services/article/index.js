@@ -6,12 +6,12 @@ const rp = require('request-promise');
 const getText = async (url) => {
   const result = await rp(url)
     .then(function (html) {
-      const article = {};
+      // const article = {};
       const $ = cheerio.load(html);
       $('table.tplCaption').remove();
-      article.content = $('article.content_detail').text();
-      article.sapo = $('meta[name="description"]').attr('content');
-      return article;
+      // article.content = $('article.content_detail').text();
+      // article.sapo = $('meta[name="description"]').attr('content');
+      return $('article.content_detail').html();
     })
     .catch(function (err) {
       console.log(err);

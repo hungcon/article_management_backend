@@ -13,5 +13,10 @@ router.get('/', function (req, res, next) {
 
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
+router.post('/delete-config', asyncMiddleware(configController.deleteConfig));
+router.post(
+  '/delete-html-config',
+  asyncMiddleware(configController.deleteHtmlConfig),
+);
 
 module.exports = router;
