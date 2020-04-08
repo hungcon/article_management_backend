@@ -12,10 +12,23 @@ const deleteConfig = async (req, res) => {
 
 const deleteHtmlConfig = async (req, res) => {
   await configService.deleteHtmlConfig({
+    configId: req.body.configId,
     htmlConfigId: req.body.htmlConfigId,
-    index: req.body.index,
   });
   return res.send({ status: 1 });
 };
 
-module.exports = { getConfig, deleteConfig, deleteHtmlConfig };
+const deleteBlockConfig = async (req, res) => {
+  await configService.deleteBlockConfig({
+    htmlConfigId: req.body.htmlConfigId,
+    blockConfigId: req.body.blockConfigId,
+  });
+  return res.send({ status: 1 });
+};
+
+module.exports = {
+  getConfig,
+  deleteConfig,
+  deleteHtmlConfig,
+  deleteBlockConfig,
+};

@@ -19,4 +19,8 @@ router.post(
   asyncMiddleware(configController.deleteHtmlConfig),
 );
 
+router.post(
+  '/delete-block-config',
+  asyncMiddleware(configController.deleteBlockConfig),
+);
 module.exports = router;

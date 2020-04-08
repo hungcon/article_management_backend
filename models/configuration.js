@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
+
 const ConfigurationSchema = new mongoose.Schema({
   category: {
     id: {
@@ -22,12 +24,14 @@ const ConfigurationSchema = new mongoose.Schema({
   },
   rss: [
     {
-      type: 'Object',
+      type: Schema.Types.ObjectId,
+      ref: 'RssConfig',
     },
   ],
   html: [
     {
-      type: 'Object',
+      type: Schema.Types.ObjectId,
+      ref: 'HtmlConfig',
     },
   ],
   updatedAt: {
