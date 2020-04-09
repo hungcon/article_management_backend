@@ -14,20 +14,24 @@ router.get('/', function (req, res, next) {
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
 router.post('/delete-config', asyncMiddleware(configController.deleteConfig));
+// html
 router.post(
-  '/delete-html-config',
-  asyncMiddleware(configController.deleteHtmlConfig),
+  '/add-html-config',
+  asyncMiddleware(configController.addHtmlConfig),
 );
-
 router.post(
   '/update-html-config',
   asyncMiddleware(configController.updateHtmlConfig),
 );
 router.post(
+  '/delete-html-config',
+  asyncMiddleware(configController.deleteHtmlConfig),
+);
+// block
+router.post(
   '/add-block-config',
   asyncMiddleware(configController.addBlockConfig),
 );
-
 router.post(
   '/update-block-config',
   asyncMiddleware(configController.updateBlockConfig),
