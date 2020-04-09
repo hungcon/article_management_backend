@@ -18,6 +18,31 @@ const deleteHtmlConfig = async (req, res) => {
   return res.send({ status: 1 });
 };
 
+const updateHtmlConfig = async (req, res) => {
+  await configService.updateHtmlConfig({
+    htmlId: req.body.htmlId,
+    html: req.body.html,
+  });
+  return res.send({ status: 1 });
+};
+
+const addBlockConfig = async (req, res) => {
+  await configService.addBlockConfig({
+    htmlId: req.body.htmlId,
+    html: req.body.html,
+    block: req.body.block,
+  });
+  return res.send({ status: 1 });
+};
+
+const updateBlockConfig = async (req, res) => {
+  await configService.updateBlockConfig({
+    blockConfigId: req.body.blockConfigId,
+    block: req.body.block,
+  });
+  return res.send({ status: 1 });
+};
+
 const deleteBlockConfig = async (req, res) => {
   await configService.deleteBlockConfig({
     htmlConfigId: req.body.htmlConfigId,
@@ -29,6 +54,9 @@ const deleteBlockConfig = async (req, res) => {
 module.exports = {
   getConfig,
   deleteConfig,
+  updateHtmlConfig,
   deleteHtmlConfig,
+  addBlockConfig,
+  updateBlockConfig,
   deleteBlockConfig,
 };

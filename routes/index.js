@@ -20,6 +20,19 @@ router.post(
 );
 
 router.post(
+  '/update-html-config',
+  asyncMiddleware(configController.updateHtmlConfig),
+);
+router.post(
+  '/add-block-config',
+  asyncMiddleware(configController.addBlockConfig),
+);
+
+router.post(
+  '/update-block-config',
+  asyncMiddleware(configController.updateBlockConfig),
+);
+router.post(
   '/delete-block-config',
   asyncMiddleware(configController.deleteBlockConfig),
 );

@@ -32,6 +32,39 @@ const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
   await HtmlConfig.findByIdAndDelete(htmlConfigId);
 };
 
+const updateHtmlConfig = async ({ htmlId, html }) => {
+  await HtmlConfig.findByIdAndUpdate(htmlId, {
+    $set: {
+      url: html.url,
+      contentRedundancySelectors: html.contentRedundancySelectors,
+    },
+  });
+};
+
+const addBlockConfig = async ({ html, block, htmlId }) => {
+  console.log(block);
+  await BlockConfig.create(block, async function (err, doc) {
+    if (err) {
+      console.log(err);
+    }
+    await HtmlConfig.findByIdAndUpdate(htmlId, {
+      $set: {
+        url: html.url,
+        contentRedundancySelectors: html.contentRedundancySelectors,
+      },
+      $push: {
+        // eslint-disable-next-line no-undef
+        blocksConfiguration: doc._id,
+      },
+    });
+  });
+};
+
+const updateBlockConfig = async ({ blockConfigId, block }) => {
+  console.log(block);
+  await BlockConfig.findByIdAndUpdate(blockConfigId, block);
+};
+
 const deleteBlockConfig = async ({ htmlConfigId, blockConfigId }) => {
   await HtmlConfig.findByIdAndUpdate(htmlConfigId, {
     $pull: { blocksConfiguration: blockConfigId },
@@ -42,6 +75,9 @@ const deleteBlockConfig = async ({ htmlConfigId, blockConfigId }) => {
 module.exports = {
   getConfiguration,
   deleteConfig,
+  updateHtmlConfig,
   deleteHtmlConfig,
+  addBlockConfig,
   deleteBlockConfig,
+  updateBlockConfig,
 };
