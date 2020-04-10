@@ -9,6 +9,31 @@ const deleteConfig = async (req, res) => {
   await configService.deleteConfig(req.body.configId);
   return res.send({ status: 1 });
 };
+
+const updateRssConfig = async (req, res) => {
+  await configService.updateRssConfig({
+    rssConfigId: req.body.rssConfigId,
+    rssConfig: req.body.rssConfig,
+  });
+  return res.send({ status: 1 });
+};
+
+const addRssConfig = async (req, res) => {
+  await configService.addRssConfig({
+    configId: req.body.configId,
+    rssConfig: req.body.rssConfig,
+  });
+  return res.send({ status: 1 });
+};
+
+const deleteRssConfig = async (req, res) => {
+  await configService.deleteRssConfig({
+    configId: req.body.configId,
+    rssConfigId: req.body.rssConfigId,
+  });
+  return res.send({ status: 1 });
+};
+
 const addHtmlConfig = async (req, res) => {
   await configService.addHtmlConfig({
     configId: req.body.configId,
@@ -62,6 +87,9 @@ const deleteBlockConfig = async (req, res) => {
 module.exports = {
   getConfig,
   deleteConfig,
+  addRssConfig,
+  updateRssConfig,
+  deleteRssConfig,
   addHtmlConfig,
   updateHtmlConfig,
   deleteHtmlConfig,

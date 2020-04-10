@@ -20,7 +20,7 @@ const RssConfigSchema = new mongoose.Schema({
     sapoSelector: {
       type: 'String',
     },
-    publicDateSelector: {
+    publishDateSelector: {
       type: 'String',
     },
   },

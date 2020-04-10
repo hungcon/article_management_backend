@@ -14,6 +14,17 @@ router.get('/', function (req, res, next) {
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
 router.post('/delete-config', asyncMiddleware(configController.deleteConfig));
+
+// rss
+router.post('/add-rss-config', asyncMiddleware(configController.addRssConfig));
+router.post(
+  '/update-rss-config',
+  asyncMiddleware(configController.updateRssConfig),
+);
+router.post(
+  '/delete-rss-config',
+  asyncMiddleware(configController.deleteRssConfig),
+);
 // html
 router.post(
   '/add-html-config',

@@ -25,10 +25,53 @@ const deleteConfig = async (configId) => {
   await Configuration.findByIdAndDelete(configId);
 };
 
+const addRssConfig = async ({ configId, rssConfig }) => {
+  const newRss = {
+    version: 0,
+    url: rssConfig.url,
+    configuration: {
+      itemSelector: rssConfig.itemSelector,
+      titleSelector: rssConfig.titleSelector,
+      linkSelector: rssConfig.linkSelector,
+      sapoSelector: rssConfig.sapoSelector,
+      publishDateSelector: rssConfig.publishDateSelector,
+    },
+  };
+  await RSSConfig.create(newRss, async function (err, doc) {
+    if (err) {
+      console.log(err);
+    }
+    await Configuration.findByIdAndUpdate(configId, {
+      $push: { rss: doc._id },
+    });
+  });
+};
+
+const updateRssConfig = async ({ rssConfig, rssConfigId }) => {
+  const update = {
+    $set: {
+      url: rssConfig.url,
+      configuration: {
+        itemSelector: rssConfig.itemSelector,
+        titleSelector: rssConfig.titleSelector,
+        linkSelector: rssConfig.linkSelector,
+        sapoSelector: rssConfig.sapoSelector,
+        publishDateSelector: rssConfig.publishDateSelector,
+      },
+    },
+    $inc: { version: 1 },
+  };
+  await RSSConfig.update({ _id: rssConfigId }, update);
+};
+
+const deleteRssConfig = async ({ configId, rssConfigId }) => {
+  await Configuration.findByIdAndUpdate(configId, {
+    $pull: { rss: rssConfigId },
+  });
+  await RSSConfig.findByIdAndDelete(rssConfigId);
+};
+
 const addHtmlConfig = async ({ html, addBlock, configId }) => {
-  console.log(html);
-  console.log(addBlock);
-  console.log(configId);
   await HtmlConfig.create(html, async function (err, doc) {
     if (err) {
       console.log(err);
@@ -109,6 +152,9 @@ const deleteBlockConfig = async ({ htmlConfigId, blockConfigId }) => {
 module.exports = {
   getConfiguration,
   deleteConfig,
+  addRssConfig,
+  updateRssConfig,
+  deleteRssConfig,
   addHtmlConfig,
   updateHtmlConfig,
   deleteHtmlConfig,
