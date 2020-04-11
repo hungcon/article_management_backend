@@ -5,6 +5,15 @@ const getConfig = async (req, res) => {
   return res.send(config);
 };
 
+const addConfig = async (req, res) => {
+  await configService.addConfig({
+    general: req.body.general,
+    config: req.body.config,
+    article: req.body.article,
+  });
+  return res.send({ status: 1 });
+};
+
 const deleteConfig = async (req, res) => {
   await configService.deleteConfig(req.body.configId);
   return res.send({ status: 1 });
@@ -86,6 +95,7 @@ const deleteBlockConfig = async (req, res) => {
 
 module.exports = {
   getConfig,
+  addConfig,
   deleteConfig,
   addRssConfig,
   updateRssConfig,

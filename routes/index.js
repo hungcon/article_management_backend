@@ -13,6 +13,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
+router.post('/add-config', asyncMiddleware(configController.addConfig));
 router.post('/delete-config', asyncMiddleware(configController.deleteConfig));
 
 // rss

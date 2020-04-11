@@ -20,7 +20,8 @@ const ConfigurationSchema = new mongoose.Schema({
     },
   },
   createdAt: {
-    type: 'Number',
+    type: 'Date',
+    default: Date.now(),
   },
   rss: [
     {
@@ -35,7 +36,7 @@ const ConfigurationSchema = new mongoose.Schema({
     },
   ],
   updatedAt: {
-    type: 'Number',
+    type: 'Date',
   },
   article: {
     type: 'Object',

@@ -21,7 +21,54 @@ const getConfiguration = async () => {
   return configuration;
 };
 
+const addConfig = async ({ general, config, article }) => {
+  const newConfig = general;
+  newConfig.article = article;
+  newConfig.createdAt = Date.now();
+  newConfig.updatedAt = Date.now();
+  if (general.crawlType === 'HTML') {
+    Configuration.create(newConfig, function (err, doc) {
+      if (err) {
+        console.log(err);
+      }
+      const addBlock = config.blocksConfiguration;
+      const html = {
+        url: config.url,
+        contentRedundancySelectors: config.contentRedundancySelectors,
+      };
+      const configId = doc._id;
+      addHtmlConfig({ html, addBlock, configId });
+    });
+  } else {
+    Configuration.create(newConfig, function (err, doc) {
+      if (err) {
+        console.log(err);
+      }
+      const rssConfig = {
+        url: config.url,
+        itemSelector: config.configuration.itemSelector,
+        titleSelector: config.configuration.titleSelector,
+        linkSelector: config.configuration.linkSelector,
+        sapoSelector: config.configuration.sapoSelector,
+        publishDateSelector: config.configuration.publishDateSelector,
+      };
+      const configId = doc._id;
+      addRssConfig({ configId, rssConfig });
+    });
+  }
+};
+
 const deleteConfig = async (configId) => {
+  const config = await Configuration.findById(configId);
+  if (config.crawlType === 'HTML') {
+    config.html.forEach(async (htmlConfigId) => {
+      await deleteHtmlConfig({ configId, htmlConfigId });
+    });
+  } else {
+    config.rss.forEach(async (rssConfigId) => {
+      await deleteRssConfig({ configId, rssConfigId });
+    });
+  }
   await Configuration.findByIdAndDelete(configId);
 };
 
@@ -151,6 +198,7 @@ const deleteBlockConfig = async ({ htmlConfigId, blockConfigId }) => {
 
 module.exports = {
   getConfiguration,
+  addConfig,
   deleteConfig,
   addRssConfig,
   updateRssConfig,
