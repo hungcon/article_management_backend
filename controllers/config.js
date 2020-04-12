@@ -14,6 +14,14 @@ const addConfig = async (req, res) => {
   return res.send({ status: 1 });
 };
 
+const updateConfig = async (req, res) => {
+  await configService.updateConfig({
+    configId: req.body.configId,
+    config: req.body.config,
+  });
+  return res.send({ status: 1 });
+};
+
 const deleteConfig = async (req, res) => {
   await configService.deleteConfig(req.body.configId);
   return res.send({ status: 1 });
@@ -64,6 +72,7 @@ const updateHtmlConfig = async (req, res) => {
   await configService.updateHtmlConfig({
     htmlId: req.body.htmlId,
     html: req.body.html,
+    configId: req.body.configId,
   });
   return res.send({ status: 1 });
 };
@@ -96,6 +105,7 @@ const deleteBlockConfig = async (req, res) => {
 module.exports = {
   getConfig,
   addConfig,
+  updateConfig,
   deleteConfig,
   addRssConfig,
   updateRssConfig,

@@ -58,6 +58,24 @@ const addConfig = async ({ general, config, article }) => {
   }
 };
 
+const updateConfig = async ({ configId, config }) => {
+  console.log(configId);
+  console.log(config);
+  await Configuration.update(
+    { _id: configId },
+    {
+      $set: {
+        'website.name': config.website,
+        'category.name': config.category,
+        queue: config.queue,
+        schedules: config.schedules,
+        status: !config.status ? '02' : '01',
+        updatedAt: Date.now(),
+      },
+    },
+  );
+};
+
 const deleteConfig = async (configId) => {
   const config = await Configuration.findById(configId);
   if (config.crawlType === 'HTML') {
@@ -90,6 +108,7 @@ const addRssConfig = async ({ configId, rssConfig }) => {
     }
     await Configuration.findByIdAndUpdate(configId, {
       $push: { rss: doc._id },
+      $set: { updatedAt: Date.now() },
     });
   });
 };
@@ -114,6 +133,7 @@ const updateRssConfig = async ({ rssConfig, rssConfigId }) => {
 const deleteRssConfig = async ({ configId, rssConfigId }) => {
   await Configuration.findByIdAndUpdate(configId, {
     $pull: { rss: rssConfigId },
+    $set: { updatedAt: Date.now() },
   });
   await RSSConfig.findByIdAndDelete(rssConfigId);
 };
@@ -125,6 +145,7 @@ const addHtmlConfig = async ({ html, addBlock, configId }) => {
     }
     await Configuration.findByIdAndUpdate(configId, {
       $push: { html: doc._id },
+      $set: { updatedAt: Date.now() },
     });
     if (addBlock.length !== 0) {
       for (let i = 0; i < addBlock.length; i += 1) {
@@ -147,6 +168,7 @@ const addHtmlConfig = async ({ html, addBlock, configId }) => {
 const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
   await Configuration.findByIdAndUpdate(configId, {
     $pull: { html: htmlConfigId },
+    $set: { updatedAt: Date.now() },
   });
   const htmlConfigDoc = await HtmlConfig.findById(htmlConfigId);
   const listBlockId = htmlConfigDoc.blocksConfiguration;
@@ -156,12 +178,15 @@ const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
   await HtmlConfig.findByIdAndDelete(htmlConfigId);
 };
 
-const updateHtmlConfig = async ({ htmlId, html }) => {
+const updateHtmlConfig = async ({ htmlId, html, configId }) => {
   await HtmlConfig.findByIdAndUpdate(htmlId, {
     $set: {
       url: html.url,
       contentRedundancySelectors: html.contentRedundancySelectors,
     },
+  });
+  await Configuration.findByIdAndUpdate(configId, {
+    $set: { updatedAt: Date.now() },
   });
 };
 
@@ -199,6 +224,7 @@ const deleteBlockConfig = async ({ htmlConfigId, blockConfigId }) => {
 module.exports = {
   getConfiguration,
   addConfig,
+  updateConfig,
   deleteConfig,
   addRssConfig,
   updateRssConfig,
