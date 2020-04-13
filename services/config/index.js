@@ -23,6 +23,20 @@ const getConfiguration = async () => {
   return configuration;
 };
 
+const updateArticleConfig = async ({
+  articleVal,
+  articleDemoLink,
+  configId,
+}) => {
+  await Configuration.findByIdAndUpdate(configId, {
+    $set: {
+      articleDemoLink,
+      article: articleVal,
+      updatedAt: Date.now(),
+    },
+  });
+};
+
 const addConfig = async ({ general, config, article }) => {
   const newConfig = general;
   newConfig.article = article;
@@ -94,6 +108,7 @@ const deleteConfig = async (configId) => {
 
 module.exports = {
   getConfiguration,
+  updateArticleConfig,
   addConfig,
   updateConfig,
   deleteConfig,

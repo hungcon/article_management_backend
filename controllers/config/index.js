@@ -5,6 +5,15 @@ const getConfig = async (req, res) => {
   return res.send(config);
 };
 
+const updateArticleConfig = async (req, res) => {
+  await configService.updateArticleConfig({
+    articleVal: req.body.articleVal,
+    articleDemoLink: req.body.articleDemoLink,
+    configId: req.body.configId,
+  });
+  return res.send({ status: 1 });
+};
+
 const addConfig = async (req, res) => {
   await configService.addConfig({
     general: req.body.general,
@@ -29,6 +38,7 @@ const deleteConfig = async (req, res) => {
 
 module.exports = {
   getConfig,
+  updateArticleConfig,
   addConfig,
   updateConfig,
   deleteConfig,
