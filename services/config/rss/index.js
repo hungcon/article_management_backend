@@ -50,6 +50,14 @@ const deleteRssConfig = async ({ configId, rssConfigId }) => {
     $pull: { rss: rssConfigId },
     $set: { updatedAt: Date.now() },
   });
+  const config = await Configuration.findById(configId);
+  if (config.rss.length === 0) {
+    await Configuration.findByIdAndUpdate(configId, {
+      $set: {
+        schedules: [],
+      },
+    });
+  }
   await RSSConfig.findByIdAndDelete(rssConfigId);
 };
 

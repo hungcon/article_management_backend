@@ -75,15 +75,12 @@ const addConfig = async ({ general, config, article }) => {
 };
 
 const updateConfig = async ({ configId, config }) => {
-  console.log(configId);
-  console.log(config);
   await Configuration.update(
     { _id: configId },
     {
       $set: {
         'website.name': config.website,
         'category.name': config.category,
-        queue: config.queue,
         schedules: config.schedules,
         status: !config.status ? '02' : '01',
         updatedAt: Date.now(),

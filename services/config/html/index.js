@@ -35,6 +35,14 @@ const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
     $pull: { html: htmlConfigId },
     $set: { updatedAt: Date.now() },
   });
+  const config = await Configuration.findById(configId);
+  if (config.html.length === 0) {
+    await Configuration.findByIdAndUpdate(configId, {
+      $set: {
+        schedules: [],
+      },
+    });
+  }
   const htmlConfigDoc = await HtmlConfig.findById(htmlConfigId);
   const listBlockId = htmlConfigDoc.blocksConfiguration;
   listBlockId.forEach(async (blockId) => {

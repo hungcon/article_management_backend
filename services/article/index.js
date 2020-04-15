@@ -8,10 +8,12 @@ const getText = async (url) => {
     .then(function (html) {
       // const article = {};
       const $ = cheerio.load(html);
-      $('table.tplCaption').remove();
+      $('figure').remove();
+      $('table').remove();
       // article.content = $('article.content_detail').text();
       // article.sapo = $('meta[name="description"]').attr('content');
-      return $('article.content_detail').html();
+      // return $('.fck_detail').html();
+      return $('.news-content').html();
     })
     .catch(function (err) {
       console.log(err);

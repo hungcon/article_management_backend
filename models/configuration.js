@@ -55,9 +55,6 @@ const ConfigurationSchema = new mongoose.Schema({
       type: String,
     },
   ],
-  queue: {
-    type: 'Number',
-  },
 });
 
 const Configuration = mongoose.model('Configuration', ConfigurationSchema);
