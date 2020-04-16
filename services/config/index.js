@@ -99,13 +99,14 @@ const deleteConfig = async (configId) => {
   if (config.crawlType === 'HTML') {
     config.html.forEach(async (htmlConfigId) => {
       await deleteHtmlConfig({ configId, htmlConfigId });
+      await Configuration.findByIdAndDelete(configId);
     });
   } else {
     config.rss.forEach(async (rssConfigId) => {
       await deleteRssConfig({ configId, rssConfigId });
+      await Configuration.findByIdAndDelete(configId);
     });
   }
-  await Configuration.findByIdAndDelete(configId);
 };
 
 module.exports = {

@@ -9,8 +9,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 
-const crawlArticle = require('./services/crawl/crawlArticle');
-
 const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -49,9 +47,6 @@ app.use(function (err, req, res, _next) {
 const { PORT } = process.env;
 const server = http.createServer(app);
 
-crawlArticle();
-
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
-  // job();
 });
