@@ -1,32 +1,30 @@
-const crawlService = require('../../services/crawl');
+const extractService = require('../../services/crawl/extract');
 
 const extractRss = async (req, res) => {
-  const rssConfig = [
-    {
-      url: 'https://vnexpress.net/rss/the-gioi.rss',
-      configuration: {
-        itemSelector: 'item',
-        titleSelector: 'title',
-        linkSelector: 'link',
-        sapoSelector: 'description',
-        publishDateSelector: 'pubDate',
-      },
-    },
-    {
-      url: 'https://vnexpress.net/rss/the-gioi.rss',
-      configuration: {
-        itemSelector: 'item',
-        titleSelector: 'title',
-        linkSelector: 'link',
-        sapoSelector: 'description',
-        publishDateSelector: 'pubDate',
-      },
-    },
-  ];
-  const article = await crawlService.extractAllRss(rssConfig);
-  res.send(article);
+  const { url, configuration } = req.body;
+  const { error, articles } = await extractService.extractRss(
+    url,
+    configuration,
+  );
+  if (error) {
+    return res.send(error);
+  }
+  return res.send(articles);
 };
 
+const extractHtml = async (req, res) => {
+  const { url, contentRedundancySelectors, blocksConfiguration } = req.body;
+  const { error, articles } = await extractService.extractHtml(
+    url,
+    contentRedundancySelectors,
+    blocksConfiguration,
+  );
+  if (error) {
+    return res.send(error);
+  }
+  return res.send(articles);
+};
 module.exports = {
   extractRss,
+  extractHtml,
 };
