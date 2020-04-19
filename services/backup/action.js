@@ -36,7 +36,7 @@ const updateArticle = async (PRODUCER, message) => {
   const result = await BackUp.findOneAndUpdate(
     { title: message.title },
     { $push: { category: message.category } },
-  ).exec();
+  );
   if (!result) {
     console.log('Error');
   } else {
@@ -53,7 +53,10 @@ const checkExistInBackUp = async (title, category) => {
     return 0;
   }
   const listCategory = article.category;
-  const checkCategory = listCategory.includes(category);
+  // eslint-disable-next-line no-shadow
+  const checkCategory = listCategory.some(
+    (categoryInDb) => categoryInDb.name === category.name,
+  );
   if (!checkCategory) {
     return 1;
   }

@@ -15,7 +15,7 @@ const client = new kafka.KafkaClient();
 consumerProgram(Consumer, client);
 producerProgram(Producer, client);
 
-async function sendArticlesToQueue(message) {
+async function sendArticleToQueue(message) {
   const exist = await checkExistInBackUp(message.title, message.category);
   switch (exist) {
     case 0:
@@ -31,4 +31,4 @@ async function sendArticlesToQueue(message) {
   }
 }
 
-module.exports = { sendArticlesToQueue };
+module.exports = { sendArticleToQueue };

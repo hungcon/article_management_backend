@@ -3,15 +3,7 @@ const cron = require('node-cron');
 const configService = require('../config');
 const { getPublicDate } = require('../../utils/date');
 const { extractLinks, extractArticle } = require('./extract');
-// const { sendArticleToQueue } = require('../kafka');
-
-const isArticleExistsInQueue = (link, title) => {
-  const article = QUEUE_LINKS.find(
-    // eslint-disable-next-line no-shadow
-    (article) => article.link === link || article.title === title,
-  );
-  return !!article;
-};
+const { sendArticleToQueue } = require('../kafka');
 
 const crawlLinks = async (
   type,
@@ -25,7 +17,7 @@ const crawlLinks = async (
   const { error, listArticles } = await extractLinks(type, multi);
   for (const article of listArticles) {
     const { link, title } = article;
-    if (link && title && !isArticleExistsInQueue(link, title)) {
+    if (link && title) {
       listArticlesPlaceholder.push(article);
     }
   }
@@ -45,10 +37,12 @@ const crawlLinks = async (
     category,
     articleConfiguration,
   }));
-  listArticlesWithConfiguration.forEach(async (articleWithConfiguration) => {
-    console.log(articleWithConfiguration);
-    // eslint-disable-next-line no-shadow
-    const { articleConfiguration, ...articleInfo } = articleWithConfiguration;
+  for (let i = 0; i < listArticlesWithConfiguration.length; i += 1) {
+    const {
+      // eslint-disable-next-line no-shadow
+      articleConfiguration,
+      ...articleInfo
+    } = listArticlesWithConfiguration[i];
 
     const { error: crawlArticleError, article } = await crawlArticle(
       articleInfo,
@@ -58,9 +52,14 @@ const crawlLinks = async (
       console.log(crawlArticleError);
     }
     // Send article to kafka
-    console.log(article);
-    // sendArticleToQueue(article);
-  });
+    if (article) {
+      sendArticleToQueue(article);
+    } else {
+      console.log(articleInfo);
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+  }
   return { status: 1 };
 };
 
@@ -81,7 +80,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         category,
         website,
         sourceCode: article.sourceCode,
-        text: article.text,
+        text: `${article.title}\n\n${article.text}`,
         tags: article.tags || [],
         numberOfWords: article.text.split(' ').length,
         images: article.images,

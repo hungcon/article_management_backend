@@ -1,4 +1,3 @@
-const $ = require('cheerio');
 const extractService = require('../../services/crawl/extract');
 
 const extractRss = async (req, res) => {

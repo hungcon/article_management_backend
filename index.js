@@ -52,3 +52,5 @@ global.QUEUE_LINKS = [];
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
 });
+
+require('./services/crawl').runSchedule();

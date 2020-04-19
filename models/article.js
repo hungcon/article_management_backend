@@ -1,24 +1,36 @@
 const mongoose = require('mongoose');
 
 const ArticleSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    unique: true,
-    trim: true,
-  },
-  pubDate: {
-    type: Date,
-  },
   link: {
-    type: String,
+    type: 'String',
   },
-  category: {
-    type: Array,
+  title: {
+    type: 'String',
   },
-  text: {
-    type: String,
-    trim: true,
+  sapo: {
+    type: 'String',
   },
+  publicDate: Date,
+  sourceCode: {
+    type: 'String',
+  },
+  text: String,
+  thumbnail: {
+    type: 'String',
+  },
+  tags: [
+    {
+      type: 'String',
+    },
+  ],
+  category: [{ _id: false, id: Number, name: String }],
+  website: { id: Number, name: String },
+  numberOfWords: Number,
+  images: [
+    {
+      type: 'String',
+    },
+  ],
 });
 
 const Article = mongoose.model('Article', ArticleSchema);

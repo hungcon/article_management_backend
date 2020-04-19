@@ -15,7 +15,7 @@ const updateArticle = async (message) => {
   const result = await Article.findOneAndUpdate(
     { title: message.title },
     { $push: { category: message.category } },
-  ).exec();
+  );
   if (!result) {
     console.log('Error');
   } else {
@@ -37,7 +37,9 @@ const checkExistInArticle = async (title, category) => {
     return 1;
   }
   const articleCategory = article.category;
-  const checkCategory = articleCategory.includes(category);
+  const checkCategory = articleCategory.some(
+    (categoryInDb) => categoryInDb.name === category.name,
+  );
   if (!checkCategory) {
     return 2;
   }

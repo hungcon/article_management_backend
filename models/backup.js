@@ -27,7 +27,7 @@ const BackUpSchema = new mongoose.Schema({
       type: 'String',
     },
   ],
-  category: [{ id: Number, name: String }],
+  category: [{ _id: false, id: Number, name: String }],
   website: { id: Number, name: String },
   numberOfWords: Number,
   images: [
@@ -37,7 +37,7 @@ const BackUpSchema = new mongoose.Schema({
   ],
 });
 
-BackUpSchema.index({ createAt: 1 }, { expireAfterSeconds: 60 * 40 });
+BackUpSchema.index({ createAt: 1 }, { expireAfterSeconds: 60 * 60 });
 const BackUp = mongoose.model('BackUp', BackUpSchema);
 
 module.exports = BackUp;
