@@ -5,24 +5,36 @@ const BackUpSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  title: {
-    type: String,
-    unique: true,
-    trim: true,
-  },
-  pubDate: {
-    type: Date,
-  },
   link: {
-    type: String,
+    type: 'String',
   },
-  category: {
-    type: Array,
+  title: {
+    type: 'String',
   },
-  text: {
-    type: String,
-    trim: true,
+  sapo: {
+    type: 'String',
   },
+  publicDate: Date,
+  sourceCode: {
+    type: 'String',
+  },
+  text: String,
+  thumbnail: {
+    type: 'String',
+  },
+  tags: [
+    {
+      type: 'String',
+    },
+  ],
+  category: [{ id: Number, name: String }],
+  website: { id: Number, name: String },
+  numberOfWords: Number,
+  images: [
+    {
+      type: 'String',
+    },
+  ],
 });
 
 BackUpSchema.index({ createAt: 1 }, { expireAfterSeconds: 60 * 40 });

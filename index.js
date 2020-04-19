@@ -47,6 +47,8 @@ app.use(function (err, req, res, _next) {
 const { PORT } = process.env;
 const server = http.createServer(app);
 
+global.QUEUE_LINKS = [];
+
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
 });

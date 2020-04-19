@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { extractArticle } = require('./article');
 
 const extractRss = async (url, configuration) => {
   try {
@@ -145,4 +146,5 @@ module.exports = {
   extractRss,
   extractHtml,
   extractLinks,
+  extractArticle,
 };

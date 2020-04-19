@@ -1,3 +1,4 @@
+const $ = require('cheerio');
 const extractService = require('../../services/crawl/extract');
 
 const extractRss = async (req, res) => {
@@ -24,7 +25,21 @@ const extractHtml = async (req, res) => {
   }
   return res.send(articles);
 };
+
+const extractArticle = async (req, res) => {
+  const { link, configuration } = req.body;
+  const { error, article } = await extractService.extractArticle(
+    link,
+    configuration,
+  );
+  if (error) {
+    return res.send(error);
+  }
+  return res.send(article);
+};
+
 module.exports = {
   extractRss,
   extractHtml,
+  extractArticle,
 };
