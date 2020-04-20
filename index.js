@@ -48,9 +48,11 @@ const { PORT } = process.env;
 const server = http.createServer(app);
 
 global.QUEUE_LINKS = [];
+global.RUNNING_WORKER_FLAG = false;
 
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
 });
 
 require('./services/crawl').runSchedule();
+require('./services/crawl').saveArticle();

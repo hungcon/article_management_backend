@@ -3,7 +3,37 @@ const cron = require('node-cron');
 const configService = require('../config');
 const { getPublicDate } = require('../../utils/date');
 const { extractLinks, extractArticle } = require('./extract');
-const { sendArticleToQueue } = require('../kafka');
+const {
+  isExistedInArticle,
+  isExistedInInvalidArticle,
+  insertArticle,
+  isCategoryAdded,
+  updateCategory,
+  insertInvalidArticle,
+} = require('../article');
+// const { sendArticleToQueue } = require('../kafka');
+
+const isExistedInQueue = (link, title) => {
+  const article = QUEUE_LINKS.find(
+    // eslint-disable-next-line no-shadow
+    (article) => article.link === link || article.title === title,
+  );
+  return !!article;
+};
+
+const isValidArticle = (article) => {
+  try {
+    const MINIMUM_OF_WORDS = 100;
+    const { link, title, text } = article;
+    if (!link || !title || !text) return false;
+
+    if (text.split(' ').length < MINIMUM_OF_WORDS) return false;
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
 
 const crawlLinks = async (
   type,
@@ -17,7 +47,13 @@ const crawlLinks = async (
   const { error, listArticles } = await extractLinks(type, multi);
   for (const article of listArticles) {
     const { link, title } = article;
-    if (link && title) {
+    if (
+      link &&
+      title &&
+      !(await isExistedInArticle(link, title)) &&
+      !(await isExistedInInvalidArticle(link, title)) &&
+      !isExistedInQueue(link, title)
+    ) {
       listArticlesPlaceholder.push(article);
     }
   }
@@ -37,29 +73,8 @@ const crawlLinks = async (
     category,
     articleConfiguration,
   }));
-  for (let i = 0; i < listArticlesWithConfiguration.length; i += 1) {
-    const {
-      // eslint-disable-next-line no-shadow
-      articleConfiguration,
-      ...articleInfo
-    } = listArticlesWithConfiguration[i];
-
-    const { error: crawlArticleError, article } = await crawlArticle(
-      articleInfo,
-      articleConfiguration,
-    );
-    if (crawlArticleError) {
-      console.log(crawlArticleError);
-    }
-    // Send article to kafka
-    if (article) {
-      sendArticleToQueue(article);
-    } else {
-      console.log(articleInfo);
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-  }
+  QUEUE_LINKS = [...QUEUE_LINKS, ...listArticlesWithConfiguration];
+  console.log('QUEUE LINKS: ', QUEUE_LINKS.length);
   return { status: 1 };
 };
 
@@ -82,12 +97,91 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         sourceCode: article.sourceCode,
         text: `${article.title}\n\n${article.text}`,
         tags: article.tags || [],
-        numberOfWords: article.text.split(' ').length,
+        numberOfWords: !article.text ? 0 : article.text.split(' ').length,
         images: article.images,
       },
     };
   } catch (error) {
     console.log(`crawlArticle: ${error}`);
+    return { error };
+  }
+};
+
+const saveArticle = () => {
+  const CHECK_QUEUE_LINKS_TIME = 0.5 * 60 * 1000;
+  setInterval(() => {
+    if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
+      worker();
+    }
+  }, CHECK_QUEUE_LINKS_TIME);
+};
+
+const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
+
+const worker = async () => {
+  const BREAK_TIME = 3000;
+  try {
+    RUNNING_WORKER_FLAG = true;
+    while (QUEUE_LINKS.length) {
+      const articleInfoAndConfiguration = QUEUE_LINKS.shift();
+      console.log(
+        'Getting article: ',
+        JSON.stringify({
+          title: articleInfoAndConfiguration.title,
+          link: articleInfoAndConfiguration.link,
+        }),
+      );
+      await articleWorker(articleInfoAndConfiguration);
+      await breakTime(BREAK_TIME);
+      console.log('====== QUEUE_LINKS :', QUEUE_LINKS.length, ' =========');
+    }
+    RUNNING_WORKER_FLAG = false;
+  } catch (error) {
+    console.log(`worker: `, error);
+  }
+};
+
+const articleWorker = async (articleInfoAndConfiguration) => {
+  try {
+    const {
+      articleConfiguration,
+      ...articleInfo
+    } = articleInfoAndConfiguration;
+    const { link, title, website, category } = articleInfo;
+    if (await isExistedInArticle(link, title)) {
+      if (!(await isCategoryAdded(link, title, category))) {
+        const updatedArticle = await updateCategory(link, title, category);
+        console.log('Updated article: ', updatedArticle.title);
+        return { status: 1 };
+      }
+      throw new Error('Article is existed');
+    }
+    const { error, article } = await crawlArticle(
+      articleInfo,
+      articleConfiguration,
+    );
+    if (error) throw error;
+    if (isValidArticle(article)) {
+      const newArticle = await insertArticle(article);
+      console.log('Inserted article: ', newArticle.title);
+    } else {
+      const newInvalidArticle = {
+        title,
+        link,
+        website,
+        category,
+      };
+      const newInvalidArticleInserted = await insertInvalidArticle(
+        newInvalidArticle,
+      );
+      console.log(
+        'Inserted invalid article: ',
+        newInvalidArticleInserted.title,
+      );
+    }
+    return { status: 1 };
+  } catch (error) {
+    console.log(`articleWorker:  `, error);
     return { error };
   }
 };
@@ -128,4 +222,5 @@ const runSchedule = async () => {
 
 module.exports = {
   runSchedule,
+  saveArticle,
 };
