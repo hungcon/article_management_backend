@@ -1,11 +1,14 @@
 /* eslint-disable func-names */
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { URL } = require('url');
+const { getLink } = require('../../utils/link');
 const { extractArticle } = require('./article');
 
 const extractRss = async (url, configuration) => {
   try {
     const articles = [];
+    const { origin } = new URL(url);
     const {
       itemSelector,
       titleSelector,
@@ -26,7 +29,7 @@ const extractRss = async (url, configuration) => {
       const publishDate = $(this).children(publishDateSelector).text().trim();
       articles.push({
         title,
-        link,
+        link: getLink(origin, link),
         sapo,
         publishDate,
       });
@@ -45,6 +48,7 @@ const extractHtml = async (
 ) => {
   try {
     const articles = [];
+    const { origin } = new URL(url);
     const { data } = await axios.get(url, {
       headers: {
         'User-Agent':
@@ -80,7 +84,7 @@ const extractHtml = async (
         const title = $block(this).find(titleSelector).text().trim();
         articles.push({
           title,
-          link,
+          link: getLink(origin, link),
         });
       });
     });

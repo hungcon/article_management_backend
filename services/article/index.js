@@ -1,26 +1,19 @@
 /* eslint-disable func-names */
 /* eslint-disable no-console */
 const cheerio = require('cheerio');
-const rp = require('request-promise');
+const axios = require('axios');
 const Article = require('../../models/article');
 const InvalidArticle = require('../../models/invalidArticle');
 
 const getText = async (url) => {
-  const result = await rp(url)
-    .then(function (html) {
-      // const article = {};
-      const $ = cheerio.load(html);
-      $('figure').remove();
-      $('table').remove();
-      // article.content = $('article.content_detail').text();
-      // article.sapo = $('meta[name="description"]').attr('content');
-      // return $('.fck_detail').html();
-      return $('.news-content').html();
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-  return result;
+  const result = await axios.get(url, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1',
+    },
+  });
+  const data = cheerio.load(result.data, { normalizeWhitespace: true });
+  return data.html();
 };
 
 const isExistedInArticle = async (link, title) => {

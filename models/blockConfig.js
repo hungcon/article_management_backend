@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const BlockConfigSchema = new mongoose.Schema({
   configuration: {
     redundancySelectors: {
-      type: 'Array',
+      type: [
+        {
+          type: 'String',
+        },
+      ],
     },
     itemSelector: {
       type: 'String',
