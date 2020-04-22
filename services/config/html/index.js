@@ -39,7 +39,7 @@ const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
   if (config.html.length === 0) {
     await Configuration.findByIdAndUpdate(configId, {
       $set: {
-        schedules: [],
+        status: '02',
       },
     });
   }

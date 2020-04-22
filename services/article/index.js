@@ -16,6 +16,44 @@ const getText = async (url) => {
   return data.html();
 };
 
+const getValidArticles = async (website, category) => {
+  if (website.name === '' && category.name === '') {
+    const articles = await Article.find({});
+    return articles;
+  }
+  if (website.name && category.name === '') {
+    const articles = await Article.find({ website });
+    return articles;
+  }
+  if (website.name === '' && category.name) {
+    const articles = await Article.find({ category });
+    return articles;
+  }
+  const articles = await Article.find({
+    $and: [{ website }, { category: { $in: [category] } }],
+  });
+  return articles;
+};
+
+const getInValidArticles = async (website, category) => {
+  if (website.name === '' && category.name === '') {
+    const articles = await InvalidArticle.find({});
+    return articles;
+  }
+  if (website.name && category.name === '') {
+    const articles = await InvalidArticle.find({ website });
+    return articles;
+  }
+  if (website.name === '' && category.name) {
+    const articles = await InvalidArticle.find({ category });
+    return articles;
+  }
+  const articles = await InvalidArticle.find({
+    $and: [{ website }, { category: { $in: [category] } }],
+  });
+  return articles;
+};
+
 const isExistedInArticle = async (link, title) => {
   const article = await Article.findOne({
     $or: [{ link }, { title }],
@@ -64,6 +102,8 @@ const insertInvalidArticle = async (invalidArticle) => {
 };
 module.exports = {
   getText,
+  getValidArticles,
+  getInValidArticles,
   isExistedInArticle,
   isExistedInInvalidArticle,
   updateCategory,

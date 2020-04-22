@@ -189,7 +189,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
 const runSchedule = async () => {
   let configurations = await configService.getConfiguration();
   configurations = configurations.filter(
-    (configuration) => configuration.status === '01',
+    (configuration) => configuration.status === '02',
   );
   configurations.forEach((configuration) => {
     const {

@@ -7,5 +7,13 @@ const asyncMiddleware = require('../middlewares/async');
 const articleController = require('../controllers/article');
 
 router.get('/get-source', asyncMiddleware(articleController.getSource));
+router.post(
+  '/get-valid-articles',
+  asyncMiddleware(articleController.getValidArticles),
+);
+router.post(
+  '/get-invalid-articles',
+  asyncMiddleware(articleController.getInValidArticles),
+);
 
 module.exports = router;
