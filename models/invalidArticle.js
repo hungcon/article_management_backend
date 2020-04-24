@@ -9,6 +9,13 @@ const InvalidArticleSchema = new mongoose.Schema({
   },
   category: [{ _id: false, id: Number, name: String }],
   website: { id: Number, name: String },
+  reason: {
+    type: 'String',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const InvalidArticle = mongoose.model('InvalidArticle', InvalidArticleSchema);

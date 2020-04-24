@@ -8,7 +8,9 @@ const {
   isExistedInInvalidArticle,
   insertArticle,
   isCategoryAdded,
+  isInvalidCategoryAdded,
   updateCategory,
+  updateInvalidCategory,
   insertInvalidArticle,
 } = require('../article');
 // const { sendArticleToQueue } = require('../kafka');
@@ -80,7 +82,7 @@ const crawlLinks = async (
 
 const crawlArticle = async (articleInfo, articleConfiguration) => {
   try {
-    const { link, title, publishDate, website, category } = articleInfo;
+    const { link, publishDate, website, category } = articleInfo;
     const { error, article } = await extractArticle(link, articleConfiguration);
     if (error) {
       console.log(error);
@@ -88,7 +90,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
     return {
       article: {
         link,
-        title,
+        title: article.title,
         sapo: article.sapo,
         publicDate: await getPublicDate(publishDate, article.publicDate),
         thumbnail: article.thumbnail,
@@ -160,16 +162,55 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       articleInfo,
       articleConfiguration,
     );
-    if (error) throw error;
-    if (isValidArticle(article)) {
-      const newArticle = await insertArticle(article);
-      console.log('Inserted article: ', newArticle.title);
-    } else {
+    if (error) {
+      if (await isExistedInArticle(link, title)) {
+        if (!(await isInvalidCategoryAdded(link, title, category))) {
+          const updatedInvalidArticle = await updateInvalidCategory(
+            link,
+            title,
+            category,
+          );
+          console.log('Updated invalid article: ', updatedInvalidArticle.title);
+          return { status: 1 };
+        }
+      }
       const newInvalidArticle = {
         title,
         link,
         website,
         category,
+        reason: 'Crawl error',
+      };
+      const newInvalidArticleInserted = await insertInvalidArticle(
+        newInvalidArticle,
+      );
+      console.log(
+        'Inserted invalid article: ',
+        newInvalidArticleInserted.title,
+      );
+      throw error;
+    }
+    if (isValidArticle(article)) {
+      const newArticle = await insertArticle(article);
+      console.log('Inserted article: ', newArticle.title);
+    } else {
+      if (await isExistedInArticle(link, title)) {
+        if (!(await isInvalidCategoryAdded(link, title, category))) {
+          const updatedInvalidArticle = await updateInvalidCategory(
+            link,
+            title,
+            category,
+          );
+          console.log('Updated invalid article: ', updatedInvalidArticle.title);
+          return { status: 1 };
+        }
+      }
+      const newInvalidArticle = {
+        title,
+        link,
+        website,
+        category,
+        reason: 'Number of words less than 100.',
       };
       const newInvalidArticleInserted = await insertInvalidArticle(
         newInvalidArticle,

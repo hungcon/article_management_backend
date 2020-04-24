@@ -79,8 +79,31 @@ const isCategoryAdded = async (link, title, category) => {
   return isAdded;
 };
 
+const isInvalidCategoryAdded = async (link, title, category) => {
+  const article = await InvalidArticle.findOne({
+    $or: [{ link }, { title }],
+  });
+  const listCategory = article.category;
+  const isAdded = listCategory.some(
+    (categoryInDb) => categoryInDb.name === category.name,
+  );
+  return isAdded;
+};
+
 const updateCategory = async (link, title, category) => {
   const update = await Article.findOneAndUpdate(
+    {
+      $or: [{ title }, { link }],
+    },
+    {
+      $push: { category },
+    },
+  );
+  return update;
+};
+
+const updateInvalidCategory = async (link, title, category) => {
+  const update = await InvalidArticle.findOneAndUpdate(
     {
       $or: [{ title }, { link }],
     },
@@ -107,7 +130,9 @@ module.exports = {
   isExistedInArticle,
   isExistedInInvalidArticle,
   updateCategory,
+  updateInvalidCategory,
   isCategoryAdded,
+  isInvalidCategoryAdded,
   insertArticle,
   insertInvalidArticle,
 };
