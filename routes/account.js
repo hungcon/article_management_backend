@@ -12,5 +12,9 @@ router.post(
 );
 
 router.post('/sign-in', asyncMiddleware(accountController.signIn));
+router.post(
+  '/is-account-existed',
+  asyncMiddleware(accountController.isAccountExisted),
+);
 
 module.exports = router;

@@ -8,7 +8,12 @@ module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, PRIVATE_KEY);
-    if (decodedToken.userName !== 'admin') {
+    if (!decodedToken) {
+      res.status(401).send({
+        error: 'Invalid user ',
+      });
+    }
+    if (decodedToken.role !== 'admin') {
       res.status(401).send({
         error: 'Unauthorized ',
       });

@@ -51,7 +51,7 @@ const deleteRssConfig = async ({ configId, rssConfigId }) => {
     $set: { updatedAt: Date.now() },
   });
   const config = await Configuration.findById(configId);
-  if (config.rss.length === 0) {
+  if (config && config.rss.length === 0) {
     await Configuration.findByIdAndUpdate(configId, {
       $set: {
         status: '02',

@@ -6,12 +6,25 @@ const signIn = async (req, res) => {
   return res.send({ accessToken });
 };
 
+const isAccountExisted = async (req, res) => {
+  const { userName } = req.body;
+  const account = await accountService.isAccountExisted(userName);
+  return res.send({ account });
+};
+
 const createAccount = async (req, res) => {
-  const account = await accountService.createAccount(req.body);
-  return res.send({ currentUser: account });
+  const { userName, password, firstName, lastName } = req.body;
+  const currentUser = await accountService.createAccount(
+    userName,
+    password,
+    firstName,
+    lastName,
+  );
+  return res.send({ currentUser });
 };
 
 module.exports = {
   createAccount,
   signIn,
+  isAccountExisted,
 };

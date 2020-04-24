@@ -36,7 +36,7 @@ const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
     $set: { updatedAt: Date.now() },
   });
   const config = await Configuration.findById(configId);
-  if (config.html.length === 0) {
+  if (config && config.html.length === 0) {
     await Configuration.findByIdAndUpdate(configId, {
       $set: {
         status: '02',
