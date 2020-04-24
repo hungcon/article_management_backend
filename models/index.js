@@ -1,7 +1,3 @@
-/* eslint-disable func-names */
-/* eslint-disable no-unused-vars */
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-console */
 const mongoose = require('mongoose');
 
 const { MONGODB_URI } = process.env;
@@ -13,6 +9,7 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
+// eslint-disable-next-line prettier/prettier
 mongoose.connection.on('error', err => {
   console.error('MongoDB connection error.');
   console.error(err);

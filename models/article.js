@@ -31,6 +31,10 @@ const ArticleSchema = new mongoose.Schema({
       type: 'String',
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Article = mongoose.model('Article', ArticleSchema);

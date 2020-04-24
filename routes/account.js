@@ -4,13 +4,13 @@ const express = require('express');
 
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
-const statisticController = require('../controllers/statistic');
+const accountController = require('../controllers/account');
 
-// block
-router.post('/statistic', asyncMiddleware(statisticController.statistic));
 router.post(
-  '/get-queue-length',
-  asyncMiddleware(statisticController.getQueueLength),
+  '/create-account',
+  asyncMiddleware(accountController.createAccount),
 );
+
+router.post('/sign-in', asyncMiddleware(accountController.signIn));
 
 module.exports = router;
