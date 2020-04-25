@@ -103,7 +103,7 @@ const extractMultiRss = async (multiRss) => {
         const { url, configuration } = rss;
         const { error, articles } = await extractRss(url, configuration);
         if (error) {
-          console.log(`extractRss: ${error}`);
+          console.log(`extractRss: ${error}in `, url);
         }
         listArticles = [...listArticles, ...articles];
       }),
@@ -127,7 +127,7 @@ const extractMultiHtml = async (multiHtml) => {
           blocksConfiguration,
         );
         if (error) {
-          console.log(`extractHtml: ${error}`);
+          console.log(`extractHtml: ${error} in `, url);
         }
         listArticles = [...listArticles, ...articles];
       }),

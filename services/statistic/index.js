@@ -1,6 +1,9 @@
 const Article = require('../../models/article');
+const { getConfiguration } = require('../config');
+const InvalidArticle = require('../../models/invalidArticle');
 
-const statistic = async (listConfig) => {
+const statisticByWebsite = async () => {
+  const listConfig = await getConfiguration();
   const numberOfArticles = [];
   const listWebsiteAndCategory = [];
   listConfig.forEach((config) => {
@@ -23,6 +26,36 @@ const statistic = async (listConfig) => {
   }
   return numberOfArticles;
 };
+
+const statisticByType = async () => {
+  const listConfig = await getConfiguration();
+  const numberOfArticles = [];
+  const listWebsite = [];
+  listConfig.forEach((config) => {
+    const website = {
+      website: config.website,
+    };
+    if (!listWebsite.some((web) => web.website.name === website.website.name)) {
+      listWebsite.push(website);
+    }
+  });
+  for (let i = 0; i < listWebsite.length; i += 1) {
+    const valid = await Article.countDocuments({
+      website: listWebsite[i].website,
+    });
+    const invalid = await InvalidArticle.countDocuments({
+      website: listWebsite[i].website,
+    });
+    numberOfArticles.push({
+      website: listWebsite[i].website,
+      valid,
+      invalid,
+    });
+  }
+  return numberOfArticles;
+};
+
 module.exports = {
-  statistic,
+  statisticByWebsite,
+  statisticByType,
 };

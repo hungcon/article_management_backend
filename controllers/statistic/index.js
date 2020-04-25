@@ -1,8 +1,12 @@
 const statisticService = require('../../services/statistic');
 
-const statistic = async (req, res) => {
-  const { listConfig } = req.body;
-  const statisticResult = await statisticService.statistic(listConfig);
+const statisticByWebsite = async (req, res) => {
+  const statisticResult = await statisticService.statisticByWebsite();
+  return res.send({ statisticResult });
+};
+
+const statisticByType = async (req, res) => {
+  const statisticResult = await statisticService.statisticByType();
   return res.send({ statisticResult });
 };
 
@@ -12,6 +16,7 @@ const getQueueLength = async (req, res) => {
 };
 
 module.exports = {
-  statistic,
+  statisticByWebsite,
+  statisticByType,
   getQueueLength,
 };

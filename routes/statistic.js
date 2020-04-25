@@ -6,8 +6,16 @@ const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const statisticController = require('../controllers/statistic');
 
-// block
-router.post('/statistic', asyncMiddleware(statisticController.statistic));
+router.post(
+  '/statistic',
+  asyncMiddleware(statisticController.statisticByWebsite),
+);
+
+router.post(
+  '/statistic-by-type',
+  asyncMiddleware(statisticController.statisticByType),
+);
+
 router.post(
   '/get-queue-length',
   asyncMiddleware(statisticController.getQueueLength),
