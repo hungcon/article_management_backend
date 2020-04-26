@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable func-names */
 /* eslint-disable no-console */
 const cheerio = require('cheerio');
@@ -16,41 +17,115 @@ const getText = async (url) => {
   return data.html();
 };
 
-const getValidArticles = async (website, category) => {
+const getValidArticles = async (website, category, date) => {
+  let articles;
+  let condition;
   if (website.name === '' && category.name === '') {
-    const articles = await Article.find({});
-    return articles;
+    if (date.startDate === '') {
+      condition = {};
+    } else {
+      condition = {
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (website.name && category.name === '') {
+    if (date.startDate === '') {
+      condition = { website };
+    } else {
+      condition = {
+        website,
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (website.name === '' && category.name) {
+    if (date.startDate === '') {
+      condition = { category };
+    } else {
+      condition = {
+        category,
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (date.startDate === '') {
+    condition = {
+      $and: [{ website }, { category: { $in: [category] } }],
+    };
+  } else {
+    condition = {
+      $and: [{ website }, { category: { $in: [category] } }],
+      createdAt: {
+        $gte: new Date(date.startDate).toISOString(),
+        $lte: new Date(date.endDate).toISOString(),
+      },
+    };
   }
-  if (website.name && category.name === '') {
-    const articles = await Article.find({ website });
-    return articles;
-  }
-  if (website.name === '' && category.name) {
-    const articles = await Article.find({ category });
-    return articles;
-  }
-  const articles = await Article.find({
-    $and: [{ website }, { category: { $in: [category] } }],
-  });
+  console.log(condition);
+  articles = await Article.find(condition);
   return articles;
 };
 
-const getInValidArticles = async (website, category) => {
+const getInValidArticles = async (website, category, date) => {
+  let articles;
+  let condition;
   if (website.name === '' && category.name === '') {
-    const articles = await InvalidArticle.find({});
-    return articles;
+    if (date.startDate === '') {
+      condition = {};
+    } else {
+      condition = {
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (website.name && category.name === '') {
+    if (date.startDate === '') {
+      condition = { website };
+    } else {
+      condition = {
+        website,
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (website.name === '' && category.name) {
+    if (date.startDate === '') {
+      condition = { category };
+    } else {
+      condition = {
+        category,
+        createdAt: {
+          $gte: new Date(date.startDate).toISOString(),
+          $lte: new Date(date.endDate).toISOString(),
+        },
+      };
+    }
+  } else if (date.startDate === '') {
+    condition = {
+      $and: [{ website }, { category: { $in: [category] } }],
+    };
+  } else {
+    condition = {
+      $and: [{ website }, { category: { $in: [category] } }],
+      createdAt: {
+        $gte: new Date(date.startDate).toISOString(),
+        $lte: new Date(date.endDate).toISOString(),
+      },
+    };
   }
-  if (website.name && category.name === '') {
-    const articles = await InvalidArticle.find({ website });
-    return articles;
-  }
-  if (website.name === '' && category.name) {
-    const articles = await InvalidArticle.find({ category });
-    return articles;
-  }
-  const articles = await InvalidArticle.find({
-    $and: [{ website }, { category: { $in: [category] } }],
-  });
+  console.log(condition);
+  articles = await InvalidArticle.find(condition);
   return articles;
 };
 
@@ -123,6 +198,14 @@ const insertInvalidArticle = async (invalidArticle) => {
   const newInvalidArticle = await InvalidArticle.create(invalidArticle);
   return newInvalidArticle;
 };
+
+const addValidArticle = async (article) => {
+  const newArticle = await Article.create(article);
+  await InvalidArticle.findOneAndDelete({
+    title: article.title,
+  });
+  return newArticle;
+};
 module.exports = {
   getText,
   getValidArticles,
@@ -135,4 +218,5 @@ module.exports = {
   isInvalidCategoryAdded,
   insertArticle,
   insertInvalidArticle,
+  addValidArticle,
 };

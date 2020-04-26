@@ -23,6 +23,13 @@ const getConfiguration = async () => {
   return configuration;
 };
 
+const getConfigByWebsite = async (website, category) => {
+  const configuration = await Configuration.findOne({
+    $and: [{ website }, { category }],
+  });
+  return configuration;
+};
+
 const getArticleConfig = async (configId) => {
   const configuration = await Configuration.findById(configId);
   return configuration;
@@ -111,6 +118,7 @@ const deleteConfig = async (configId) => {
 
 module.exports = {
   getConfiguration,
+  getConfigByWebsite,
   getArticleConfig,
   updateArticleConfig,
   addConfig,

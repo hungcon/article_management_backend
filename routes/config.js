@@ -9,6 +9,10 @@ const configController = require('../controllers/config');
 
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
 router.post(
+  '/get-config-by-website',
+  asyncMiddleware(configController.getConfigByWebsite),
+);
+router.post(
   '/get-article-config',
   asyncMiddleware(configController.getArticleConfig),
 );

@@ -8,6 +8,10 @@ const articleController = require('../controllers/article');
 
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 router.post(
+  '/add-valid-articles',
+  asyncMiddleware(articleController.addValidArticle),
+);
+router.post(
   '/get-valid-articles',
   asyncMiddleware(articleController.getValidArticles),
 );
