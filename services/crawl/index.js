@@ -245,7 +245,7 @@ const runSchedule = async () => {
     if (schedules.length !== 0) {
       schedules.forEach((schedule) => {
         // eslint-disable-next-line func-names
-        cron.schedule(schedule, function () {
+        const task = cron.schedule(schedule, function () {
           crawlLinks(
             crawlType,
             crawlType === 'RSS' ? rss : html,
@@ -254,6 +254,7 @@ const runSchedule = async () => {
             article,
           );
         });
+        TASKS.push(task);
       });
     }
   });
@@ -261,7 +262,18 @@ const runSchedule = async () => {
   return { status: 1 };
 };
 
+const reRunSchedule = async () => {
+  QUEUE_LINKS = [];
+  TASKS.forEach((task) => {
+    task.destroy();
+    console.log('Task destroyed');
+  });
+  runSchedule();
+  return { status: 1 };
+};
+
 module.exports = {
+  reRunSchedule,
   runSchedule,
   saveArticle,
 };

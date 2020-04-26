@@ -46,6 +46,7 @@ const { PORT } = process.env;
 const server = http.createServer(app);
 
 global.QUEUE_LINKS = [];
+global.TASKS = [];
 global.RUNNING_WORKER_FLAG = false;
 
 server.listen(PORT, () => {
