@@ -3,8 +3,18 @@
 /* eslint-disable no-console */
 const cheerio = require('cheerio');
 const axios = require('axios');
+let mongoose = require('mongoose');
 const Article = require('../../models/article');
 const InvalidArticle = require('../../models/invalidArticle');
+const CleanArticle = require('../../models/cleanArticle');
+const UnCleanArticle = require('../../models/uncleanArticle');
+const {
+  // getNormalizedText,
+  getSpecialText,
+  transformText,
+  parseXml,
+  getXmlNormalizedText,
+} = require('../cleanText');
 
 const getText = async (url) => {
   const result = await axios.get(url, {
@@ -206,6 +216,33 @@ const addValidArticle = async (article) => {
   });
   return newArticle;
 };
+
+const cleanArticle = async (articleId) => {
+  const id = mongoose.Types.ObjectId(articleId);
+  const article = await Article.findById(id);
+  const xml = await getXmlNormalizedText(article.text);
+  if (xml === '') {
+    const unCleanArticle = {
+      articleId,
+    };
+    await UnCleanArticle.create(unCleanArticle);
+    await Article.findOneAndUpdate({ _id: id }, { isCleaned: 0 });
+    return { status: 0 };
+  }
+  const cleanText = transformText(await parseXml(xml));
+  const { loanwords, abbreviations } = await getSpecialText(xml);
+  const newCleanArticle = {
+    articleId,
+    loanwords,
+    abbreviations,
+    xml,
+    cleanText,
+  };
+  await CleanArticle.create(newCleanArticle);
+  await Article.findOneAndUpdate({ _id: id }, { isCleaned: 1 });
+  return { status: 1 };
+};
+
 module.exports = {
   getText,
   getValidArticles,
@@ -219,4 +256,5 @@ module.exports = {
   insertArticle,
   insertInvalidArticle,
   addValidArticle,
+  cleanArticle,
 };

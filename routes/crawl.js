@@ -21,4 +21,6 @@ router.post(
   asyncMiddleware(extractController.extractArticle),
 );
 
+router.post('/crawl/clean-text', asyncMiddleware(crawlController.cleanText));
+
 module.exports = router;

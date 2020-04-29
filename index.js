@@ -53,5 +53,5 @@ server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
 });
 
-// require('./services/crawl').runSchedule();
-// require('./services/crawl').saveArticle();
+require('./services/crawl').runSchedule();
+require('./services/crawl').saveArticle();

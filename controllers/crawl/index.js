@@ -9,7 +9,14 @@ const reRunSchedule = async (req, res) => {
   const status = await crawlService.reRunSchedule();
   res.send(status);
 };
+
+const cleanText = async (req, res) => {
+  const { articleId } = req.body;
+  const { cleanedArticle } = await crawlService.cleanText(articleId);
+  res.send(cleanedArticle);
+};
 module.exports = {
   reRunSchedule,
   runSchedule,
+  cleanText,
 };

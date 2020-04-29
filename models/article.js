@@ -35,6 +35,14 @@ const ArticleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isCleaned: {
+    type: 'Number',
+    enums: [
+      0, // 'error',
+      1, // 'cleaned',
+    ],
+    default: 0,
+  },
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
