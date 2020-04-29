@@ -69,16 +69,27 @@ async function getSpecialText(xml) {
   const $mtu = cheerio.load($.html($('mtu')));
   $mtu('body')
     .children()
+    // eslint-disable-next-line func-names
     .each(function () {
       if ($(this).attr('nsw') === 'abbreviation') {
-        const abbreviation = $(this).attr('orig');
-        if (!abbreviations.includes(abbreviation)) {
+        const abbreviation = {
+          words: $(this).attr('orig'),
+          positions: [],
+          machineClean: transformText($(this).children().text()),
+          peopleClean: transformText($(this).children().text()),
+        };
+        if (!abbreviations.some((pro) => pro.words === abbreviation.words)) {
           abbreviations.push(abbreviation);
         }
       }
       if ($(this).attr('nsw') === 'loanword') {
-        const loanword = $(this).attr('orig');
-        if (!loanwords.includes(loanword)) {
+        const loanword = {
+          words: $(this).attr('orig'),
+          positions: [],
+          machineClean: transformText($(this).children().text()),
+          peopleClean: transformText($(this).children().text()),
+        };
+        if (!loanwords.some((pro) => pro.words === loanword.words)) {
           loanwords.push(loanword);
         }
       }

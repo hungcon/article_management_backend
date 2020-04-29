@@ -5,20 +5,20 @@ const { Schema } = mongoose;
 const CleanArticleSchema = new mongoose.Schema({
   articleId: {
     type: Schema.Types.ObjectId,
+    ref: 'Article',
   },
   loanwords: [
     {
-      type: 'String',
+      type: Schema.Types.ObjectId,
+      ref: 'Loanwords',
     },
   ],
   abbreviations: [
     {
-      type: 'String',
+      type: Schema.Types.ObjectId,
+      ref: 'Abbreviations',
     },
   ],
-  xml: {
-    type: 'String',
-  },
   cleanText: {
     type: 'String',
   },

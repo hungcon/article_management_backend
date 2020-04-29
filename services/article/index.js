@@ -7,7 +7,8 @@ let mongoose = require('mongoose');
 const Article = require('../../models/article');
 const InvalidArticle = require('../../models/invalidArticle');
 const CleanArticle = require('../../models/cleanArticle');
-const UnCleanArticle = require('../../models/uncleanArticle');
+const Loanwords = require('../../models/loanwords');
+const Abbreviations = require('../../models/abbreviations');
 const {
   // getNormalizedText,
   getSpecialText,
@@ -222,20 +223,46 @@ const cleanArticle = async (articleId) => {
   const article = await Article.findById(id);
   const xml = await getXmlNormalizedText(article.text);
   if (xml === '') {
-    const unCleanArticle = {
-      articleId,
-    };
-    await UnCleanArticle.create(unCleanArticle);
-    await Article.findOneAndUpdate({ _id: id }, { isCleaned: 0 });
     return { status: 0 };
   }
   const cleanText = transformText(await parseXml(xml));
   const { loanwords, abbreviations } = await getSpecialText(xml);
+
+  loanwords.forEach((loanword) => {
+    for (
+      let index = cleanText.indexOf(loanword.peopleClean);
+      index >= 0;
+      index = cleanText.indexOf(loanword.peopleClean, index + 1)
+    ) {
+      loanword.positions.push(index);
+    }
+  });
+
+  abbreviations.forEach((abbreviation) => {
+    for (
+      let index = cleanText.indexOf(abbreviation.peopleClean);
+      index >= 0;
+      index = cleanText.indexOf(abbreviation.peopleClean, index + 1)
+    ) {
+      abbreviation.positions.push(index);
+    }
+  });
+
+  const listLoanwordId = [];
+  for (const loanword of loanwords) {
+    const newLoanword = await Loanwords.create(loanword);
+    listLoanwordId.push(newLoanword._id);
+  }
+
+  const listAbbreviationId = [];
+  for (const abbreviation of abbreviations) {
+    const newAbbreviation = await Abbreviations.create(abbreviation);
+    listAbbreviationId.push(newAbbreviation._id);
+  }
   const newCleanArticle = {
     articleId,
-    loanwords,
-    abbreviations,
-    xml,
+    loanwords: listLoanwordId,
+    abbreviations: listAbbreviationId,
     cleanText,
   };
   await CleanArticle.create(newCleanArticle);
