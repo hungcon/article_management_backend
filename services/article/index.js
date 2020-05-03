@@ -270,6 +270,17 @@ const cleanArticle = async (articleId) => {
   return { status: 1 };
 };
 
+const getCleanArticles = async () => {
+  const articles = await CleanArticle.find({})
+    .populate({
+      path: 'loanwords',
+      model: Loanwords,
+    })
+    .populate({ path: 'abbreviations', model: Abbreviations })
+    .populate({ path: 'articleId', model: Article });
+  return articles;
+};
+
 module.exports = {
   getText,
   getValidArticles,
@@ -284,4 +295,5 @@ module.exports = {
   insertInvalidArticle,
   addValidArticle,
   cleanArticle,
+  getCleanArticles,
 };

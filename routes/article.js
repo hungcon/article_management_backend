@@ -20,4 +20,9 @@ router.post(
   asyncMiddleware(articleController.getInValidArticles),
 );
 
+router.post(
+  '/get-clean-articles',
+  asyncMiddleware(articleController.getCleanArticles),
+);
+
 module.exports = router;

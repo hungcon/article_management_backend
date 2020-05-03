@@ -32,9 +32,15 @@ const getInValidArticles = async (req, res) => {
   return res.send(articles);
 };
 
+const getCleanArticles = async (req, res) => {
+  const articles = await articleService.getCleanArticles();
+  return res.send(articles);
+};
+
 module.exports = {
   getSource,
   getValidArticles,
   getInValidArticles,
   addValidArticle,
+  getCleanArticles,
 };
