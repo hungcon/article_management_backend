@@ -63,8 +63,8 @@ async function parseXml(xml) {
 }
 
 async function getSpecialText(xml) {
-  const loanwords = [];
-  const abbreviations = [];
+  const loanwordsInfo = [];
+  const abbreviationsInfo = [];
   const $ = cheerio.load(xml, { xmlMode: true });
   const $mtu = cheerio.load($.html($('mtu')));
   $mtu('body')
@@ -74,27 +74,29 @@ async function getSpecialText(xml) {
       if ($(this).attr('nsw') === 'abbreviation') {
         const abbreviation = {
           words: $(this).attr('orig'),
-          positions: [],
-          machineClean: transformText($(this).children().text()),
-          peopleClean: transformText($(this).children().text()),
+          normalize: [],
+          machineNormalize: transformText($(this).children().text()),
+          peopleNormalize: transformText($(this).children().text()),
         };
-        if (!abbreviations.some((pro) => pro.words === abbreviation.words)) {
-          abbreviations.push(abbreviation);
+        if (
+          !abbreviationsInfo.some((pro) => pro.words === abbreviation.words)
+        ) {
+          abbreviationsInfo.push(abbreviation);
         }
       }
       if ($(this).attr('nsw') === 'loanword') {
         const loanword = {
           words: $(this).attr('orig'),
-          positions: [],
-          machineClean: transformText($(this).children().text()),
-          peopleClean: transformText($(this).children().text()),
+          normalize: [],
+          machineNormalize: transformText($(this).children().text()),
+          peopleNormalize: transformText($(this).children().text()),
         };
-        if (!loanwords.some((pro) => pro.words === loanword.words)) {
-          loanwords.push(loanword);
+        if (!loanwordsInfo.some((pro) => pro.words === loanword.words)) {
+          loanwordsInfo.push(loanword);
         }
       }
     });
-  return { loanwords, abbreviations };
+  return { loanwordsInfo, abbreviationsInfo };
 }
 
 module.exports = {

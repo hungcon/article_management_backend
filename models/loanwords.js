@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
+
 const LoanwordsSchema = new mongoose.Schema({
   words: String,
-  positions: [
+  normalize: [
     {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      ref: 'WordInfo',
     },
   ],
-  machineClean: String,
-  peopleClean: String,
 });
 
 const Loanwords = mongoose.model('Loanwords', LoanwordsSchema);

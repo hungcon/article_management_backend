@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
+
 const AbbreviationsSchema = new mongoose.Schema({
   words: String,
-  positions: [
+  normalize: [
     {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      ref: 'WordInfo',
     },
   ],
-  machineClean: String,
-  peopleClean: String,
 });
 
 const Abbreviations = mongoose.model('Abbreviations', AbbreviationsSchema);

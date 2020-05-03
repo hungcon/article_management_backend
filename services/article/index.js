@@ -9,6 +9,7 @@ const InvalidArticle = require('../../models/invalidArticle');
 const CleanArticle = require('../../models/cleanArticle');
 const Loanwords = require('../../models/loanwords');
 const Abbreviations = require('../../models/abbreviations');
+const WordInfo = require('../../models/wordInfo');
 const {
   // getNormalizedText,
   getSpecialText,
@@ -226,36 +227,64 @@ const cleanArticle = async (articleId) => {
     return { status: 0 };
   }
   const cleanText = transformText(await parseXml(xml));
-  const { loanwords, abbreviations } = await getSpecialText(xml);
+  const { loanwordsInfo, abbreviationsInfo } = await getSpecialText(xml);
 
-  loanwords.forEach((loanword) => {
+  loanwordsInfo.forEach(async (loanword) => {
     for (
-      let index = cleanText.indexOf(loanword.peopleClean);
+      let index = cleanText.indexOf(loanword.peopleNormalize);
       index >= 0;
-      index = cleanText.indexOf(loanword.peopleClean, index + 1)
+      index = cleanText.indexOf(loanword.peopleNormalize, index + 1)
     ) {
-      loanword.positions.push(index);
+      const loanwordInfo = {
+        position: index,
+        machineNormalize: loanword.machineNormalize,
+        peopleNormalize: loanword.peopleNormalize,
+      };
+      loanword.normalize.push(loanwordInfo);
     }
   });
 
-  abbreviations.forEach((abbreviation) => {
+  abbreviationsInfo.forEach(async (abbreviation) => {
     for (
-      let index = cleanText.indexOf(abbreviation.peopleClean);
+      let index = cleanText.indexOf(abbreviation.peopleNormalize);
       index >= 0;
-      index = cleanText.indexOf(abbreviation.peopleClean, index + 1)
+      index = cleanText.indexOf(abbreviation.peopleNormalize, index + 1)
     ) {
-      abbreviation.positions.push(index);
+      const abbreviationInfo = {
+        position: index,
+        machineNormalize: abbreviation.machineNormalize,
+        peopleNormalize: abbreviation.peopleNormalize,
+      };
+      abbreviation.normalize.push(abbreviationInfo);
     }
   });
 
   const listLoanwordId = [];
-  for (const loanword of loanwords) {
+  for (const loanwordInfo of loanwordsInfo) {
+    const { normalize } = loanwordInfo;
+    const loanword = {
+      words: loanwordInfo.words,
+      normalize: [],
+    };
+    for (const wordInfo of normalize) {
+      const wordInfoAdded = await WordInfo.create(wordInfo);
+      loanword.normalize.push(wordInfoAdded._id);
+    }
     const newLoanword = await Loanwords.create(loanword);
     listLoanwordId.push(newLoanword._id);
   }
 
   const listAbbreviationId = [];
-  for (const abbreviation of abbreviations) {
+  for (const abbreviationInfo of abbreviationsInfo) {
+    const { normalize } = abbreviationInfo;
+    const abbreviation = {
+      words: abbreviationInfo.words,
+      normalize: [],
+    };
+    for (const wordInfo of normalize) {
+      const wordInfoAdded = await WordInfo.create(wordInfo);
+      abbreviation.normalize.push(wordInfoAdded._id);
+    }
     const newAbbreviation = await Abbreviations.create(abbreviation);
     listAbbreviationId.push(newAbbreviation._id);
   }
@@ -275,8 +304,19 @@ const getCleanArticles = async () => {
     .populate({
       path: 'loanwords',
       model: Loanwords,
+      populate: {
+        path: 'normalize',
+        modal: WordInfo,
+      },
     })
-    .populate({ path: 'abbreviations', model: Abbreviations })
+    .populate({
+      path: 'abbreviations',
+      model: Abbreviations,
+      populate: {
+        path: 'normalize',
+        modal: WordInfo,
+      },
+    })
     .populate({ path: 'articleId', model: Article });
   return articles;
 };
