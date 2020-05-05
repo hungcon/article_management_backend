@@ -16,6 +16,10 @@ router.post(
   asyncMiddleware(articleController.getValidArticles),
 );
 router.post(
+  '/get-valid-article-by-id',
+  asyncMiddleware(articleController.getValidArticleById),
+);
+router.post(
   '/get-invalid-articles',
   asyncMiddleware(articleController.getInValidArticles),
 );
@@ -23,6 +27,11 @@ router.post(
 router.post(
   '/get-clean-articles',
   asyncMiddleware(articleController.getCleanArticles),
+);
+
+router.post(
+  '/get-clean-article-by-id',
+  asyncMiddleware(articleController.getCleanArticleById),
 );
 
 module.exports = router;

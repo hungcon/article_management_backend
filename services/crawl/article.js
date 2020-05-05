@@ -203,7 +203,9 @@ const extractArticle = async (link, configuration) => {
     .replace(/\n+\s+\n/g, '\n')
     .replace(/\n+/g, '\n')
     .replace(/\n/g, '\n\n')
-    .replace(/\.\//g, '');
+    .replace(/\.\//g, '')
+    .replace(/\.+/g, '')
+    .replace(/>+/g, '');
 
   const article = {
     title: title ? entities.decode(title.trim()) : undefined,

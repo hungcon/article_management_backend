@@ -98,7 +98,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         category,
         website,
         sourceCode: article.sourceCode,
-        text: `${article.title}\n\n${article.text}`,
+        text: `${article.title} .${article.text}`,
         tags: article.tags || [],
         numberOfWords: !article.text ? 0 : article.text.split(' ').length,
         images: article.images,

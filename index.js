@@ -55,3 +55,6 @@ server.listen(PORT, () => {
 
 // require('./services/crawl').runSchedule();
 // require('./services/crawl').saveArticle();
+// require('./services/hust').worker(
+//   'https://www.hust.edu.vn/su-kien-sap-dien-ra',
+// );

@@ -49,16 +49,25 @@ async function getXmlNormalizedText(inputText) {
   }
 }
 
+const replaceSpace = (text) => {
+  const replaceText = text
+    .replace(/\s\s+/g, ' ')
+    .replace(/\t/g, ' ')
+    .replace(/\n/g, ' ');
+  return replaceText;
+};
+
 async function parseXml(xml) {
   const $ = cheerio.load(xml, { xmlMode: true });
-  const text = transformText(
-    $('maryxml')
-      .text()
-      .replace(/\s\s+/g, ' ')
-      .replace(/\t/g, '')
-      .replace(/\n/g, '')
-      .trim(),
-  );
+  //  = transformText(
+  const text = $('maryxml')
+    .text()
+    .replace(/\s\s+/g, ' ')
+    .replace(/\t/g, ' ')
+    .replace(/\./g, '.\n\n')
+    .replace(/\n/g, '')
+    .trim();
+  // );
   return text;
 }
 
@@ -75,8 +84,8 @@ async function getSpecialText(xml) {
         const abbreviation = {
           words: $(this).attr('orig'),
           normalize: [],
-          machineNormalize: transformText($(this).children().text()),
-          peopleNormalize: transformText($(this).children().text()),
+          machineNormalize: $(this).children().text().trim(),
+          peopleNormalize: $(this).children().text().trim(),
         };
         if (
           !abbreviationsInfo.some((pro) => pro.words === abbreviation.words)
@@ -88,8 +97,8 @@ async function getSpecialText(xml) {
         const loanword = {
           words: $(this).attr('orig'),
           normalize: [],
-          machineNormalize: transformText($(this).children().text()),
-          peopleNormalize: transformText($(this).children().text()),
+          machineNormalize: replaceSpace($(this).children().text().trim()),
+          peopleNormalize: replaceSpace($(this).children().text().trim()),
         };
         if (!loanwordsInfo.some((pro) => pro.words === loanword.words)) {
           loanwordsInfo.push(loanword);

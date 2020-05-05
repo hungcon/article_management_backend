@@ -13,7 +13,7 @@ const WordInfo = require('../../models/wordInfo');
 const {
   // getNormalizedText,
   getSpecialText,
-  transformText,
+  // transformText,
   parseXml,
   getXmlNormalizedText,
 } = require('../cleanText');
@@ -83,6 +83,11 @@ const getValidArticles = async (website, category, date) => {
   console.log(condition);
   articles = await Article.find(condition);
   return articles;
+};
+
+const getValidArticleById = async (articleId) => {
+  const article = await Article.findOne({ _id: articleId });
+  return article;
 };
 
 const getInValidArticles = async (website, category, date) => {
@@ -226,7 +231,7 @@ const cleanArticle = async (articleId) => {
   if (xml === '') {
     return { status: 0 };
   }
-  const cleanText = transformText(await parseXml(xml));
+  const cleanText = await parseXml(xml);
   const { loanwordsInfo, abbreviationsInfo } = await getSpecialText(xml);
 
   loanwordsInfo.forEach(async (loanword) => {
@@ -289,7 +294,7 @@ const cleanArticle = async (articleId) => {
     listAbbreviationId.push(newAbbreviation._id);
   }
   const newCleanArticle = {
-    articleId,
+    article: articleId,
     loanwords: listLoanwordId,
     abbreviations: listAbbreviationId,
     cleanText,
@@ -317,13 +322,35 @@ const getCleanArticles = async () => {
         modal: WordInfo,
       },
     })
-    .populate({ path: 'articleId', model: Article });
+    .populate({ path: 'article', model: Article });
   return articles;
 };
 
+const getCleanArticleById = async (cleanArticleId) => {
+  const article = await CleanArticle.findOne({ _id: cleanArticleId })
+    .populate({
+      path: 'loanwords',
+      model: Loanwords,
+      populate: {
+        path: 'normalize',
+        modal: WordInfo,
+      },
+    })
+    .populate({
+      path: 'abbreviations',
+      model: Abbreviations,
+      populate: {
+        path: 'normalize',
+        modal: WordInfo,
+      },
+    })
+    .populate({ path: 'article', model: Article });
+  return article;
+};
 module.exports = {
   getText,
   getValidArticles,
+  getValidArticleById,
   getInValidArticles,
   isExistedInArticle,
   isExistedInInvalidArticle,
@@ -336,4 +363,5 @@ module.exports = {
   addValidArticle,
   cleanArticle,
   getCleanArticles,
+  getCleanArticleById,
 };
