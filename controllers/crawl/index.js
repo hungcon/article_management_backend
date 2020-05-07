@@ -5,6 +5,11 @@ const runSchedule = async (req, res) => {
   res.send(status);
 };
 
+const stopSchedule = async (req, res) => {
+  const status = await crawlService.stopSchedule();
+  res.send(status);
+};
+
 const reRunSchedule = async (req, res) => {
   const status = await crawlService.reRunSchedule();
   res.send(status);
@@ -17,6 +22,7 @@ const cleanText = async (req, res) => {
 };
 module.exports = {
   reRunSchedule,
+  stopSchedule,
   runSchedule,
   cleanText,
 };

@@ -98,7 +98,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         category,
         website,
         sourceCode: article.sourceCode,
-        text: `${article.title} .${article.text}`,
+        text: `${article.title}. ${article.text}`,
         tags: article.tags || [],
         numberOfWords: !article.text ? 0 : article.text.split(' ').length,
         images: article.images,
@@ -245,7 +245,7 @@ const runSchedule = async () => {
       });
     }
   });
-
+  saveArticle();
   return { status: 1 };
 };
 
@@ -259,6 +259,14 @@ const reRunSchedule = async () => {
   return { status: 1 };
 };
 
+const stopSchedule = async () => {
+  TASKS.forEach((task) => {
+    task.destroy();
+    console.log('Task destroyed');
+  });
+  return { status: 1 };
+};
+
 const cleanText = async (articleId) => {
   const cleanedArticle = await cleanArticle(articleId);
   return { cleanedArticle };
@@ -266,6 +274,7 @@ const cleanText = async (articleId) => {
 
 module.exports = {
   reRunSchedule,
+  stopSchedule,
   runSchedule,
   saveArticle,
   cleanText,

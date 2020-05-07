@@ -8,7 +8,18 @@ const authMiddleware = require('../middlewares/auth');
 const crawlController = require('../controllers/crawl');
 const extractController = require('../controllers/crawl/extract');
 
-router.post('/crawl/run', asyncMiddleware(crawlController.runSchedule));
+router.post(
+  '/crawl/run',
+  authMiddleware,
+  asyncMiddleware(crawlController.runSchedule),
+);
+
+router.post(
+  '/crawl/stop',
+  authMiddleware,
+  asyncMiddleware(crawlController.stopSchedule),
+);
+
 router.post(
   '/crawl/re-run',
   authMiddleware,

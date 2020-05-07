@@ -85,6 +85,20 @@ const getValidArticles = async (website, category, date) => {
   return articles;
 };
 
+const updateValidArticle = async (link, title, text, id) => {
+  const updateResult = await Article.findOneAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        link,
+        title,
+        text,
+      },
+    },
+  );
+  return updateResult;
+};
+
 const getValidArticleById = async (articleId) => {
   const article = await Article.findOne({ _id: articleId });
   return article;
@@ -350,6 +364,7 @@ const getCleanArticleById = async (cleanArticleId) => {
 module.exports = {
   getText,
   getValidArticles,
+  updateValidArticle,
   getValidArticleById,
   getInValidArticles,
   isExistedInArticle,

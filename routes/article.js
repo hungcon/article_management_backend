@@ -11,6 +11,12 @@ router.post(
   '/add-valid-articles',
   asyncMiddleware(articleController.addValidArticle),
 );
+
+router.post(
+  '/update-valid-article',
+  asyncMiddleware(articleController.updateValidArticle),
+);
+
 router.post(
   '/get-valid-articles',
   asyncMiddleware(articleController.getValidArticles),

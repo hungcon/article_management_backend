@@ -12,6 +12,18 @@ const addValidArticle = async (req, res) => {
   return res.send({ status: 0 });
 };
 
+const updateValidArticle = async (req, res) => {
+  const { link, title, text, id } = req.body;
+  const updateResult = await articleService.updateValidArticle(
+    link,
+    title,
+    text,
+    id,
+  );
+  if (updateResult) return res.send({ status: 1 });
+  return res.send({ status: 0 });
+};
+
 const getValidArticles = async (req, res) => {
   const { website, category, date } = req.body;
   const articles = await articleService.getValidArticles(
@@ -52,6 +64,7 @@ const getCleanArticleById = async (req, res) => {
 module.exports = {
   getSource,
   getValidArticles,
+  updateValidArticle,
   getValidArticleById,
   getInValidArticles,
   addValidArticle,
