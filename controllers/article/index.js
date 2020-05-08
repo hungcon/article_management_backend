@@ -24,6 +24,12 @@ const updateValidArticle = async (req, res) => {
   return res.send({ status: 0 });
 };
 
+const deleteValidArticle = async (req, res) => {
+  const { id } = req.body;
+  const status = await articleService.deleteValidArticle(id);
+  return res.send(status);
+};
+
 const getValidArticles = async (req, res) => {
   const { website, category, date } = req.body;
   const articles = await articleService.getValidArticles(
@@ -65,6 +71,7 @@ module.exports = {
   getSource,
   getValidArticles,
   updateValidArticle,
+  deleteValidArticle,
   getValidArticleById,
   getInValidArticles,
   addValidArticle,

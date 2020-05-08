@@ -4,20 +4,12 @@ const { Schema } = mongoose;
 
 const ConfigurationSchema = new mongoose.Schema({
   category: {
-    id: {
-      type: 'Number',
-    },
-    name: {
-      type: 'String',
-    },
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
   },
   website: {
-    id: {
-      type: 'Number',
-    },
-    name: {
-      type: 'String',
-    },
+    type: Schema.Types.ObjectId,
+    ref: 'Website',
   },
   createdAt: {
     type: 'Date',

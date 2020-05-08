@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
 const ArticleSchema = new mongoose.Schema({
   link: {
     type: 'String',
@@ -23,8 +24,16 @@ const ArticleSchema = new mongoose.Schema({
       type: 'String',
     },
   ],
-  category: [{ _id: false, id: Number, name: String }],
-  website: { id: Number, name: String },
+  category: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+    },
+  ],
+  website: {
+    type: Schema.Types.ObjectId,
+    ref: 'Website',
+  },
   numberOfWords: Number,
   images: [
     {

@@ -10,6 +10,11 @@ const websiteController = require('../controllers/website');
 router.post('/get-websites', asyncMiddleware(websiteController.getWebsites));
 
 router.post(
+  '/find-website-by-id',
+  asyncMiddleware(websiteController.findWebsiteById),
+);
+
+router.post(
   '/add-website',
   authMiddleware,
   asyncMiddleware(websiteController.addWebsite),

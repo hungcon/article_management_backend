@@ -5,6 +5,12 @@ const getWebsites = async (req, res) => {
   return res.send(listWebsite);
 };
 
+const findWebsiteById = async (req, res) => {
+  const { websiteId } = req.body;
+  const website = await websiteService.findWebsiteById(websiteId);
+  return res.send(website);
+};
+
 const isWebsiteExisted = async (req, res) => {
   const { name } = req.body;
   const website = await websiteService.isWebsiteExisted(name);
@@ -35,4 +41,5 @@ module.exports = {
   updateWebsite,
   deleteWebsite,
   isWebsiteExisted,
+  findWebsiteById,
 };

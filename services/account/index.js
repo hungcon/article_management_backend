@@ -25,7 +25,7 @@ const signIn = async (userName, password) => {
   }
   const payload = { userName: user.userName, role: user.role };
   const token = jwt.sign(payload, PRIVATE_KEY, {
-    expiresIn: '1h',
+    expiresIn: '10h',
   });
   return {
     success: true,
@@ -49,7 +49,7 @@ const createAccount = async (userName, password, firstName, lastName) => {
   const currentUser = await UserInfor.create(userInfor);
   const payload = { userName: currentUser.userName, role: currentUser.role };
   const token = jwt.sign(payload, PRIVATE_KEY, {
-    expiresIn: '1h',
+    expiresIn: '10h',
   });
   return {
     success: true,

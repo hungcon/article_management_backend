@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
+
 const InvalidArticleSchema = new mongoose.Schema({
   link: {
     type: 'String',
@@ -7,8 +9,16 @@ const InvalidArticleSchema = new mongoose.Schema({
   title: {
     type: 'String',
   },
-  category: [{ _id: false, id: Number, name: String }],
-  website: { id: Number, name: String },
+  category: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+    },
+  ],
+  website: {
+    type: Schema.Types.ObjectId,
+    ref: 'Website',
+  },
   reason: {
     type: 'String',
   },

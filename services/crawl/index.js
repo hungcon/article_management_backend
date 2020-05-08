@@ -95,8 +95,8 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         sapo: article.sapo,
         publicDate: await getPublicDate(publishDate, article.publicDate),
         thumbnail: article.thumbnail,
-        category,
-        website,
+        category: category._id,
+        website: website._id,
         sourceCode: article.sourceCode,
         text: `${article.title}. ${article.text}`,
         tags: article.tags || [],
@@ -150,7 +150,7 @@ const invalidArticleWorker = async (link, title, category, website, reason) => {
       const updatedInvalidArticle = await updateInvalidCategory(
         link,
         title,
-        category,
+        category._id,
       );
       console.log('Updated invalid article: ', updatedInvalidArticle.title);
       return;
@@ -159,8 +159,8 @@ const invalidArticleWorker = async (link, title, category, website, reason) => {
   const newInvalidArticle = {
     title,
     link,
-    website,
-    category,
+    website: website._id,
+    category: category._id,
     reason,
   };
   const newInvalidArticleInserted = await insertInvalidArticle(
@@ -178,7 +178,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
     const { link, title, website, category } = articleInfo;
     if (await isExistedInArticle(link, title)) {
       if (!(await isCategoryAdded(link, title, category))) {
-        const updatedArticle = await updateCategory(link, title, category);
+        const updatedArticle = await updateCategory(link, title, category._id);
         console.log('Updated article: ', updatedArticle.title);
         return { status: 1 };
       }

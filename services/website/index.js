@@ -5,6 +5,11 @@ const getWebsites = async () => {
   return listWebsites;
 };
 
+const findWebsiteById = async (websiteId) => {
+  const website = await Website.findById(websiteId);
+  return website;
+};
+
 const addWebsite = async (name) => {
   await Website.create({ name });
 };
@@ -27,4 +32,5 @@ module.exports = {
   updateWebsite,
   isWebsiteExisted,
   deleteWebsite,
+  findWebsiteById,
 };

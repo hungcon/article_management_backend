@@ -3,11 +3,21 @@ const Configuration = require('../../models/configuration');
 const RSSConfig = require('../../models/rssConfig');
 const HtmlConfig = require('../../models/htmlConfig');
 const BlockConfig = require('../../models/blockConfig');
+const Website = require('../../models/website');
+const Category = require('../../models/category');
 const { addHtmlConfig, deleteHtmlConfig } = require('./html');
 const { addRssConfig, deleteRssConfig } = require('./rss');
 
 const getConfiguration = async () => {
   const configuration = await Configuration.find({})
+    .populate({
+      path: 'website',
+      model: Website,
+    })
+    .populate({
+      path: 'category',
+      model: Category,
+    })
     .populate({
       path: 'rss',
       model: RSSConfig,
@@ -25,7 +35,10 @@ const getConfiguration = async () => {
 
 const getConfigByWebsite = async (website, category) => {
   const configuration = await Configuration.findOne({
-    $and: [{ website }, { category }],
+    $and: [
+      { website: (await Website.findOne({ name: website.name }))._id },
+      { category: (await Category.findOne({ name: category.name }))._id },
+    ],
   });
   return configuration;
 };
@@ -52,6 +65,8 @@ const updateArticleConfig = async ({
 const addConfig = async ({ general, config, article }) => {
   const newConfig = general;
   newConfig.article = article;
+  newConfig.website = (await Website.findOne({ name: general.website }))._id;
+  newConfig.category = (await Category.findOne({ name: general.category }))._id;
   newConfig.createdAt = Date.now();
   newConfig.updatedAt = Date.now();
   if (general.crawlType === 'HTML') {

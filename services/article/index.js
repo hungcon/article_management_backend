@@ -1,15 +1,13 @@
 /* eslint-disable prefer-const */
-/* eslint-disable func-names */
-/* eslint-disable no-console */
-const cheerio = require('cheerio');
-const axios = require('axios');
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const Article = require('../../models/article');
 const InvalidArticle = require('../../models/invalidArticle');
 const CleanArticle = require('../../models/cleanArticle');
 const Loanwords = require('../../models/loanwords');
 const Abbreviations = require('../../models/abbreviations');
 const WordInfo = require('../../models/wordInfo');
+const Website = require('../../models/website');
+const Category = require('../../models/category');
 const {
   // getNormalizedText,
   getSpecialText,
@@ -18,21 +16,10 @@ const {
   getXmlNormalizedText,
 } = require('../cleanText');
 
-const getText = async (url) => {
-  const result = await axios.get(url, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1',
-    },
-  });
-  const data = cheerio.load(result.data, { normalizeWhitespace: true });
-  return data.html();
-};
-
 const getValidArticles = async (website, category, date) => {
   let articles;
   let condition;
-  if (website.name === '' && category.name === '') {
+  if (!website && !category) {
     if (date.startDate === '') {
       condition = {};
     } else {
@@ -43,24 +30,26 @@ const getValidArticles = async (website, category, date) => {
         },
       };
     }
-  } else if (website.name && category.name === '') {
+  } else if (website && !category) {
     if (date.startDate === '') {
-      condition = { website };
+      condition = { website: (await Website.findOne({ name: website }))._id };
     } else {
       condition = {
-        website,
+        website: (await Website.findOne({ name: website }))._id,
         createdAt: {
           $gte: new Date(date.startDate).toISOString(),
           $lte: new Date(date.endDate).toISOString(),
         },
       };
     }
-  } else if (website.name === '' && category.name) {
+  } else if (!website && category) {
     if (date.startDate === '') {
-      condition = { category };
+      condition = {
+        category: (await Category.findOne({ name: category }))._id,
+      };
     } else {
       condition = {
-        category,
+        category: (await Category.findOne({ name: category }))._id,
         createdAt: {
           $gte: new Date(date.startDate).toISOString(),
           $lte: new Date(date.endDate).toISOString(),
@@ -69,11 +58,21 @@ const getValidArticles = async (website, category, date) => {
     }
   } else if (date.startDate === '') {
     condition = {
-      $and: [{ website }, { category: { $in: [category] } }],
+      $and: [
+        { website: (await Website.findOne({ name: website }))._id },
+        {
+          category: { $in: [(await Category.findOne({ name: category }))._id] },
+        },
+      ],
     };
   } else {
     condition = {
-      $and: [{ website }, { category: { $in: [category] } }],
+      $and: [
+        { website: (await Website.findOne({ name: website }))._id },
+        {
+          category: { $in: [(await Category.findOne({ name: category }))._id] },
+        },
+      ],
       createdAt: {
         $gte: new Date(date.startDate).toISOString(),
         $lte: new Date(date.endDate).toISOString(),
@@ -81,7 +80,15 @@ const getValidArticles = async (website, category, date) => {
     };
   }
   console.log(condition);
-  articles = await Article.find(condition);
+  articles = await Article.find(condition)
+    .populate({
+      path: 'website',
+      model: Website,
+    })
+    .populate({
+      path: 'category',
+      model: Category,
+    });
   return articles;
 };
 
@@ -99,6 +106,11 @@ const updateValidArticle = async (link, title, text, id) => {
   return updateResult;
 };
 
+const deleteValidArticle = async (id) => {
+  await Article.findOneAndDelete({ _id: id });
+  return { status: 1 };
+};
+
 const getValidArticleById = async (articleId) => {
   const article = await Article.findOne({ _id: articleId });
   return article;
@@ -107,7 +119,7 @@ const getValidArticleById = async (articleId) => {
 const getInValidArticles = async (website, category, date) => {
   let articles;
   let condition;
-  if (website.name === '' && category.name === '') {
+  if (!website && !category) {
     if (date.startDate === '') {
       condition = {};
     } else {
@@ -118,24 +130,26 @@ const getInValidArticles = async (website, category, date) => {
         },
       };
     }
-  } else if (website.name && category.name === '') {
+  } else if (website && !category) {
     if (date.startDate === '') {
-      condition = { website };
+      condition = { website: (await Website.findOne({ name: website }))._id };
     } else {
       condition = {
-        website,
+        website: (await Website.findOne({ name: website }))._id,
         createdAt: {
           $gte: new Date(date.startDate).toISOString(),
           $lte: new Date(date.endDate).toISOString(),
         },
       };
     }
-  } else if (website.name === '' && category.name) {
+  } else if (!website && category) {
     if (date.startDate === '') {
-      condition = { category };
+      condition = {
+        category: (await Category.findOne({ name: category }))._id,
+      };
     } else {
       condition = {
-        category,
+        category: (await Category.findOne({ name: category }))._id,
         createdAt: {
           $gte: new Date(date.startDate).toISOString(),
           $lte: new Date(date.endDate).toISOString(),
@@ -144,11 +158,21 @@ const getInValidArticles = async (website, category, date) => {
     }
   } else if (date.startDate === '') {
     condition = {
-      $and: [{ website }, { category: { $in: [category] } }],
+      $and: [
+        { website: (await Website.findOne({ name: website }))._id },
+        {
+          category: { $in: [(await Category.findOne({ name: category }))._id] },
+        },
+      ],
     };
   } else {
     condition = {
-      $and: [{ website }, { category: { $in: [category] } }],
+      $and: [
+        { website: (await Website.findOne({ name: website }))._id },
+        {
+          category: { $in: [(await Category.findOne({ name: category }))._id] },
+        },
+      ],
       createdAt: {
         $gte: new Date(date.startDate).toISOString(),
         $lte: new Date(date.endDate).toISOString(),
@@ -156,7 +180,15 @@ const getInValidArticles = async (website, category, date) => {
     };
   }
   console.log(condition);
-  articles = await InvalidArticle.find(condition);
+  articles = await InvalidArticle.find(condition)
+    .populate({
+      path: 'website',
+      model: Website,
+    })
+    .populate({
+      path: 'category',
+      model: Category,
+    });
   return articles;
 };
 
@@ -180,7 +212,7 @@ const isCategoryAdded = async (link, title, category) => {
   });
   const listCategory = article.category;
   const isAdded = listCategory.some(
-    (categoryInDb) => categoryInDb.name === category.name,
+    (categoryInDb) => categoryInDb === category._id,
   );
   return isAdded;
 };
@@ -191,7 +223,7 @@ const isInvalidCategoryAdded = async (link, title, category) => {
   });
   const listCategory = article.category;
   const isAdded = listCategory.some(
-    (categoryInDb) => categoryInDb.name === category.name,
+    (categoryInDb) => categoryInDb === category._id,
   );
   return isAdded;
 };
@@ -336,7 +368,20 @@ const getCleanArticles = async () => {
         modal: WordInfo,
       },
     })
-    .populate({ path: 'article', model: Article });
+    .populate({
+      path: 'article',
+      model: Article,
+      populate: [
+        {
+          path: 'website',
+          modal: Website,
+        },
+        {
+          path: 'category',
+          modal: Category,
+        },
+      ],
+    });
   return articles;
 };
 
@@ -362,9 +407,9 @@ const getCleanArticleById = async (cleanArticleId) => {
   return article;
 };
 module.exports = {
-  getText,
   getValidArticles,
   updateValidArticle,
+  deleteValidArticle,
   getValidArticleById,
   getInValidArticles,
   isExistedInArticle,

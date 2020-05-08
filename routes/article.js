@@ -18,6 +18,11 @@ router.post(
 );
 
 router.post(
+  '/delete-valid-article',
+  asyncMiddleware(articleController.deleteValidArticle),
+);
+
+router.post(
   '/get-valid-articles',
   asyncMiddleware(articleController.getValidArticles),
 );
