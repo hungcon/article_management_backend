@@ -12,6 +12,25 @@ const getUserInfo = async (userName) => {
   };
   return userInfo;
 };
+
+const getListAccounts = async () => {
+  const accounts = await Account.find({});
+  const listAccounts = [];
+  for (const account of accounts) {
+    const temp = {
+      role: account.role,
+      _id: account._id,
+      userName: account.userName,
+      firstName: (await UserInfor.findOne({ userName: account.userName }))
+        .firstName,
+      lastName: (await UserInfor.findOne({ userName: account.userName }))
+        .lastName,
+    };
+    listAccounts.push(temp);
+  }
+  return listAccounts;
+};
 module.exports = {
   getUserInfo,
+  getListAccounts,
 };

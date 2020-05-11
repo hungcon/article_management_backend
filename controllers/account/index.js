@@ -23,8 +23,29 @@ const createAccount = async (req, res) => {
   return res.send({ currentUser });
 };
 
+const addAccount = async (req, res) => {
+  const { account } = req.body;
+  await accountService.addAccount(account);
+  return res.send({ status: 1 });
+};
+
+const updatePassword = async (req, res) => {
+  const { userName, password } = req.body;
+  await accountService.updatePassword(userName, password);
+  return res.send({ status: 1 });
+};
+
+const deleteAccount = async (req, res) => {
+  const { accountId } = req.body;
+  await accountService.deleteAccount(accountId);
+  return res.send({ status: 1 });
+};
+
 module.exports = {
   createAccount,
   signIn,
   isAccountExisted,
+  deleteAccount,
+  addAccount,
+  updatePassword,
 };

@@ -6,4 +6,9 @@ const getUserInfo = async (req, res) => {
   return res.send(userInfo);
 };
 
-module.exports = { getUserInfo };
+const getListAccounts = async (req, res) => {
+  const listAccounts = await userInfoService.getListAccounts();
+  return res.send(listAccounts);
+};
+
+module.exports = { getUserInfo, getListAccounts };
