@@ -19,9 +19,10 @@ const CleanArticleSchema = new mongoose.Schema({
       ref: 'Abbreviations',
     },
   ],
-  cleanText: {
+  allophones: {
     type: 'String',
   },
+  cleanText: String,
   createdAt: {
     type: Date,
     default: Date.now,

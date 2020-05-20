@@ -27,26 +27,13 @@ const ConfigurationSchema = new mongoose.Schema({
       ref: 'HtmlConfig',
     },
   ],
-  updatedAt: {
-    type: 'Date',
-  },
-  article: {
-    type: 'Object',
-  },
-  articleDemoLink: {
-    type: 'String',
-  },
-  status: {
-    type: 'String',
-  },
-  crawlType: {
-    type: 'String',
-  },
-  schedules: [
-    {
-      type: String,
-    },
-  ],
+  updatedAt: Date,
+  article: Object,
+  articleDemoLink: String,
+  turnOnSchedule: String,
+  crawlType: String,
+  schedules: [String],
+  autoSynthetic: String,
 });
 
 const Configuration = mongoose.model('Configuration', ConfigurationSchema);

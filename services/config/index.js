@@ -64,6 +64,8 @@ const updateArticleConfig = async ({
 
 const addConfig = async ({ general, config, article }) => {
   const newConfig = general;
+  newConfig.turnOnSchedule = general.turnOnSchedule ? '01' : '02';
+  newConfig.autoSynthetic = general.autoSynthetic ? '01' : '02';
   newConfig.article = article;
   newConfig.website = (await Website.findOne({ name: general.website }))._id;
   newConfig.category = (await Category.findOne({ name: general.category }))._id;

@@ -1,80 +1,28 @@
 const articleService = require('../../services/article');
 
-const getSource = async (req, res) => {
-  const text = await articleService.getText(req.query.url);
-  return res.send(text);
+const getAllophones = async (req, res) => {
+  const { message } = req.body;
+  console.log(message);
+  // const { articleId } = req.query;
+  // const status = await articleService.storeAllophones(message, articleId);
+  // return res.send(status);
+  return res.send({ status: 1 });
 };
 
-const addValidArticle = async (req, res) => {
-  const { article } = req.body;
-  const addResult = await articleService.addValidArticle(article);
-  if (addResult) return res.send({ status: 1 });
-  return res.send({ status: 0 });
+const splitSentences = async (req, res) => {
+  const { text } = req.body;
+  const sentences = await articleService.splitToSentences(text);
+  return res.send(sentences);
 };
 
-const updateValidArticle = async (req, res) => {
-  const { link, title, text, id } = req.body;
-  const updateResult = await articleService.updateValidArticle(
-    link,
-    title,
-    text,
-    id,
-  );
-  if (updateResult) return res.send({ status: 1 });
-  return res.send({ status: 0 });
-};
-
-const deleteValidArticle = async (req, res) => {
-  const { id } = req.body;
-  const status = await articleService.deleteValidArticle(id);
+const replaceAllophones = async (req, res) => {
+  const { cleanArticleId } = req.body;
+  const status = await articleService.replaceAllophones(cleanArticleId);
   return res.send(status);
 };
 
-const getValidArticles = async (req, res) => {
-  const { website, category, date } = req.body;
-  const articles = await articleService.getValidArticles(
-    website,
-    category,
-    date,
-  );
-  return res.send(articles);
-};
-
-const getValidArticleById = async (req, res) => {
-  const { articleId } = req.body;
-  const article = await articleService.getValidArticleById(articleId);
-  return res.send(article);
-};
-
-const getInValidArticles = async (req, res) => {
-  const { website, category, date } = req.body;
-  const articles = await articleService.getInValidArticles(
-    website,
-    category,
-    date,
-  );
-  return res.send(articles);
-};
-
-const getCleanArticles = async (req, res) => {
-  const articles = await articleService.getCleanArticles();
-  return res.send(articles);
-};
-
-const getCleanArticleById = async (req, res) => {
-  const { cleanArticleId } = req.body;
-  const article = await articleService.getCleanArticleById(cleanArticleId);
-  return res.send(article);
-};
-
 module.exports = {
-  getSource,
-  getValidArticles,
-  updateValidArticle,
-  deleteValidArticle,
-  getValidArticleById,
-  getInValidArticles,
-  addValidArticle,
-  getCleanArticles,
-  getCleanArticleById,
+  getAllophones,
+  splitSentences,
+  replaceAllophones,
 };

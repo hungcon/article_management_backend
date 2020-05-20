@@ -43,6 +43,7 @@ const crawlLinks = async (
   multi,
   website,
   category,
+  autoSynthetic,
   articleConfiguration,
 ) => {
   console.log('Running', website, category);
@@ -74,6 +75,7 @@ const crawlLinks = async (
     ...article,
     website,
     category,
+    autoSynthetic,
     articleConfiguration,
   }));
   QUEUE_LINKS = [...QUEUE_LINKS, ...listArticlesWithConfiguration];
@@ -98,7 +100,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         category: category._id,
         website: website._id,
         sourceCode: article.sourceCode,
-        text: `${article.title}. ${article.text}`,
+        text: `${article.title}.\n\n${article.text}`,
         tags: article.tags || [],
         numberOfWords: !article.text ? 0 : article.text.split(' ').length,
         images: article.images,
@@ -111,7 +113,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  const CHECK_QUEUE_LINKS_TIME = 4000;
+  const CHECK_QUEUE_LINKS_TIME = 10000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
       worker();
@@ -122,7 +124,7 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  const BREAK_TIME = 4000;
+  const BREAK_TIME = 10000;
   try {
     RUNNING_WORKER_FLAG = true;
     while (QUEUE_LINKS.length) {
@@ -175,7 +177,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       articleConfiguration,
       ...articleInfo
     } = articleInfoAndConfiguration;
-    const { link, title, website, category } = articleInfo;
+    const { link, title, website, category, autoSynthetic } = articleInfo;
     if (await isExistedInArticle(link, title)) {
       if (!(await isCategoryAdded(link, title, category))) {
         const updatedArticle = await updateCategory(link, title, category._id);
@@ -198,6 +200,9 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       const articleId = newArticle._id;
       const { status } = await cleanArticle(articleId);
       console.log(status === 1 ? 'Cleaned article' : 'Unclean');
+      if (autoSynthetic === '01') {
+        console.log('Tự động tổng hợp');
+      }
     } else {
       await invalidArticleWorker(
         link,
@@ -217,7 +222,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
 const runSchedule = async () => {
   let configurations = await configService.getConfiguration();
   configurations = configurations.filter(
-    (configuration) => configuration.status === '01',
+    (configuration) => configuration.turnOnSchedule === '01',
   );
   configurations.forEach((configuration) => {
     const {
@@ -228,6 +233,7 @@ const runSchedule = async () => {
       article,
       website,
       category,
+      autoSynthetic,
     } = configuration;
     if (schedules.length !== 0) {
       schedules.forEach((schedule) => {
@@ -238,6 +244,7 @@ const runSchedule = async () => {
             crawlType === 'RSS' ? rss : html,
             website,
             category,
+            autoSynthetic,
             article,
           );
         });

@@ -44,13 +44,19 @@ const ArticleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  isCleaned: {
+  status: {
     type: 'Number',
     enums: [
-      0, // 'error',
-      1, // 'cleaned',
+      1, // Đã thu thập,
+      2, // Chuẩn hoá máy lỗi
+      3, // Đã chuẩn hoá máy
+      4, // Đang chuẩn hoá tay
+      5, // Đã chuẩn hoá tay
+      6, // Đang chuyển audio
+      7, // Chuyển audio lỗi
+      8, // Đã chuyển audio
     ],
-    default: 0,
+    default: 1,
   },
 });
 

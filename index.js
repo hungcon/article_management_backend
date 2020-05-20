@@ -8,6 +8,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const ngrok = require('ngrok');
 
 const app = express();
 // view engine setup
@@ -51,10 +52,13 @@ global.RUNNING_WORKER_FLAG = false;
 
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);
+
+  (async function () {
+    const url = await ngrok.connect(PORT);
+    global.CALLBACK_URL = url;
+    console.log(url);
+  })();
 });
 
 // require('./services/crawl').runSchedule();
 // require('./services/crawl').saveArticle();
-// require('./services/hust').worker(
-//   'https://www.hust.edu.vn/su-kien-sap-dien-ra',
-// );

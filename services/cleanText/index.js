@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const axios = require('axios');
 const cheerio = require('cheerio');
 const querystring = require('querystring');
@@ -25,6 +26,53 @@ async function getNormalizedText(inputText) {
   const normalizedText = parseXml(arrayXml).trim();
   return normalizedText;
 }
+
+const splitSentences = async (text) => {
+  try {
+    const { data } = await axios({
+      method: 'POST',
+      url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
+      timeout: 10 * 1000,
+      data: {
+        function_call_invoke:
+          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-split-release-hello',
+        text,
+        input_text: 'A',
+      },
+    });
+    return data;
+  } catch (error) {
+    return '';
+  }
+};
+
+const getAllophones = async (text, articleId) => {
+  try {
+    console.log(`${CALLBACK_URL}/get-allophones?articleId=${articleId}`);
+    const { data } = await axios({
+      method: 'POST',
+      url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
+      timeout: 10 * 1000,
+      data: {
+        function_call_invoke:
+          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
+        input_text: text,
+        rate: 1,
+        voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
+        bit_rate: '128000',
+        user_id: '46030',
+        app_id: '5b8776d92942cc5b459928b5',
+        input_type: 'TEXT',
+        request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
+        output_type: 'ALLOPHONES',
+        call_back: `${CALLBACK_URL}/get-allophones?articleId=${articleId}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    return '';
+  }
+};
 
 async function getXmlNormalizedText(inputText) {
   try {
@@ -71,10 +119,10 @@ async function parseXml(xml) {
   return text;
 }
 
-async function getSpecialText(xml) {
+async function getWords(allophones) {
   const loanwordsInfo = [];
   const abbreviationsInfo = [];
-  const $ = cheerio.load(xml, { xmlMode: true });
+  const $ = cheerio.load(allophones, { xmlMode: true });
   const $mtu = cheerio.load($.html($('mtu')));
   $mtu('body')
     .children()
@@ -113,5 +161,7 @@ module.exports = {
   parseXml,
   getXmlNormalizedText,
   transformText,
-  getSpecialText,
+  getWords,
+  getAllophones,
+  splitSentences,
 };
