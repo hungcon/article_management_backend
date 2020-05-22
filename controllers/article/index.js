@@ -2,11 +2,14 @@ const articleService = require('../../services/article');
 
 const getAllophones = async (req, res) => {
   const { message } = req.body;
-  console.log(message);
-  // const { articleId } = req.query;
-  // const status = await articleService.storeAllophones(message, articleId);
-  // return res.send(status);
-  return res.send({ status: 1 });
+  const { cleanArticleId, sentenceId } = req.query;
+
+  const status = await articleService.storeAllophones(
+    message,
+    cleanArticleId,
+    sentenceId,
+  );
+  return res.send(status);
 };
 
 const splitSentences = async (req, res) => {

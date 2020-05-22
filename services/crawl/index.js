@@ -3,18 +3,20 @@ const cron = require('node-cron');
 const configService = require('../config');
 const { getPublicDate } = require('../../utils/date');
 const { extractLinks, extractArticle } = require('./extract');
+const { cleanArticle } = require('../article/clean');
 const {
   isExistedInArticle,
-  isExistedInInvalidArticle,
   insertArticle,
   isCategoryAdded,
-  isInvalidCategoryAdded,
   updateCategory,
+} = require('../article/valid');
+
+const {
+  isExistedInInvalidArticle,
+  isInvalidCategoryAdded,
   updateInvalidCategory,
   insertInvalidArticle,
-  cleanArticle,
-} = require('../article');
-// const { sendArticleToQueue } = require('../kafka');
+} = require('../article/invalid');
 
 const isExistedInQueue = (link, title) => {
   const article = QUEUE_LINKS.find(
@@ -100,7 +102,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         category: category._id,
         website: website._id,
         sourceCode: article.sourceCode,
-        text: `${article.title}.\n\n${article.text}`,
+        text: `${article.title}. ${article.text}`,
         tags: article.tags || [],
         numberOfWords: !article.text ? 0 : article.text.split(' ').length,
         images: article.images,
@@ -113,7 +115,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  const CHECK_QUEUE_LINKS_TIME = 10000;
+  const CHECK_QUEUE_LINKS_TIME = 2 * 60 * 1000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
       worker();
@@ -124,7 +126,7 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  const BREAK_TIME = 10000;
+  const BREAK_TIME = 2 * 60 * 1000;
   try {
     RUNNING_WORKER_FLAG = true;
     while (QUEUE_LINKS.length) {

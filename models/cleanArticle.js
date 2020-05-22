@@ -7,22 +7,12 @@ const CleanArticleSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Article',
   },
-  loanwords: [
+  sentences: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Loanwords',
+      ref: 'Sentence',
     },
   ],
-  abbreviations: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Abbreviations',
-    },
-  ],
-  allophones: {
-    type: 'String',
-  },
-  cleanText: String,
   createdAt: {
     type: Date,
     default: Date.now,

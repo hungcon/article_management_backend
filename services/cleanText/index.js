@@ -46,9 +46,11 @@ const splitSentences = async (text) => {
   }
 };
 
-const getAllophones = async (text, articleId) => {
+const getAllophones = async (text, cleanArticleId, sentenceId) => {
   try {
-    console.log(`${CALLBACK_URL}/get-allophones?articleId=${articleId}`);
+    console.log(
+      `${CALLBACK_URL}/get-allophones?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
+    );
     const { data } = await axios({
       method: 'POST',
       url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
@@ -65,7 +67,7 @@ const getAllophones = async (text, articleId) => {
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones?articleId=${articleId}`,
+        call_back: `${CALLBACK_URL}/get-allophones?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
       },
     });
     return data;
