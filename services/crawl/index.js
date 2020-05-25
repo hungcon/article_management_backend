@@ -201,7 +201,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       console.log('Inserted article: ', newArticle.title);
       const articleId = newArticle._id;
       const { status } = await cleanArticle(articleId);
-      console.log(status === 1 ? 'Cleaned article' : 'Unclean');
+      console.log(status);
       if (autoSynthetic === '01') {
         console.log('Tự động tổng hợp');
       }

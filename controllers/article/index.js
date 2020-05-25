@@ -12,20 +12,20 @@ const getAllophones = async (req, res) => {
   return res.send(status);
 };
 
-const splitSentences = async (req, res) => {
-  const { text } = req.body;
-  const sentences = await articleService.splitToSentences(text);
-  return res.send(sentences);
-};
-
-const replaceAllophones = async (req, res) => {
-  const { cleanArticleId } = req.body;
-  const status = await articleService.replaceAllophones(cleanArticleId);
+const getAllophonesOfWords = async (req, res) => {
+  const { message } = req.body;
+  const { sentenceId, position, orig, type } = req.query;
+  const status = await articleService.replaceAllophones(
+    message,
+    sentenceId,
+    position,
+    orig,
+    type,
+  );
   return res.send(status);
 };
 
 module.exports = {
   getAllophones,
-  splitSentences,
-  replaceAllophones,
+  getAllophonesOfWords,
 };

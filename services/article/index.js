@@ -7,10 +7,10 @@ const CleanArticle = require('../../models/cleanArticle');
 // const WordInfo = require('../../models/wordInfo');
 const Sentence = require('../../models/sentence');
 const {
-  getAllophones,
+  // getAllophones,
   // getWords,
   parseXml,
-  splitSentences,
+  // splitSentences,
 } = require('../cleanText');
 
 const storeAllophones = async (allophones, cleanArticleId, sentenceId) => {
@@ -32,21 +32,16 @@ const storeAllophones = async (allophones, cleanArticleId, sentenceId) => {
   return { status: 1 };
 };
 
-const splitToSentences = async (text) => {
-  const data = await splitSentences(text);
-  const sentences = JSON.parse(data.message);
-  for (let i = 0; i < sentences.length; i += 1) {
-    const allophones = await getAllophones(
-      sentences[i],
-      '5ebf6c7266022147ac8ac9ee',
-    );
-    console.log(allophones);
-  }
-  return sentences;
-};
-
-const replaceAllophones = async (allophones) => {
-  let $ = cheerio.load(allophones, {
+const replaceAllophones = async (message, sentenceId, position, orig, type) => {
+  const $replace = cheerio.load(message, {
+    xmlMode: true,
+    decodeEntities: false,
+  });
+  $replace('boundary').remove();
+  const replaceTag = $replace('phrase').html();
+  const sentence = await Sentence.findOne({ _id: sentenceId });
+  const { allophones } = sentence;
+  const $ = cheerio.load(allophones, {
     xmlMode: true,
     decodeEntities: false,
   });
@@ -55,31 +50,33 @@ const replaceAllophones = async (allophones) => {
     .find('mtu')
     .each(function (index) {
       if (
-        $(this).get(0).attribs.nsw === 'loanword' &&
-        $(this).get(0).attribs.orig === 'covid'
+        $(this).get(0).attribs.nsw === type &&
+        $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase()
       ) {
         listIndex.push(index);
       }
     });
-  const indexToReplace = listIndex[1];
+  const indexToReplace = listIndex[position - 1];
   $('s')
     .find('mtu')
     .each(function (index) {
       if (
-        $(this).get(0).attribs.nsw === 'loanword' &&
-        $(this).get(0).attribs.orig === 'covid' &&
+        $(this).get(0).attribs.nsw === type &&
+        $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase() &&
         index === indexToReplace
       ) {
-        const tagToReplace = $(this).html();
-        const res = tagToReplace.replace('cô-vít', 'hưng con').trim();
-        $(this).children().replaceWith(res);
+        $(this).children().remove();
+        $(this).append(replaceTag.trim());
       }
     });
-  return $.html();
+  await Sentence.findOneAndUpdate(
+    { _id: sentenceId },
+    { allophones: $.html(), text: await parseXml($.html()) },
+  );
+  return { status: 1 };
 };
 
 module.exports = {
   storeAllophones,
-  splitToSentences,
   replaceAllophones,
 };

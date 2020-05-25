@@ -14,19 +14,20 @@ const getCleanArticleById = async (req, res) => {
 const cleanArticle = async (req, res) => {
   const { articleId } = req.body;
   const {
-    cleanArticleId,
-    numberOfSentences,
+    status,
+    // cleanArticleId,
+    // numberOfSentences,
   } = await cleanArticleService.cleanArticle(articleId);
-  let status;
+  // let status;
   // eslint-disable-next-line func-names
-  setTimeout(async function () {
-    status = await cleanArticleService.checkNumberCallback(
-      cleanArticleId,
-      articleId,
-      numberOfSentences,
-    );
-  }, 1.5 * 60 * 1000);
-  return res.send(status);
+  // setTimeout(async function () {
+  //   status = await cleanArticleService.checkNumberCallback(
+  //     cleanArticleId,
+  //     articleId,
+  //     numberOfSentences,
+  //   );
+  // }, 30 * 1000);
+  return res.send({ status });
 };
 
 const replaceSentence = async (req, res) => {

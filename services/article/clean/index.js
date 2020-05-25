@@ -80,10 +80,18 @@ const cleanArticle = async (articleId) => {
   for (let i = 0; i < listSentences.length; i += 1) {
     await getAllophones(listSentences[i], cleanArticle._id, i);
   }
-  return {
-    cleanArticleId: cleanArticle._id,
-    numberOfSentences: listSentences.length,
-  };
+  setTimeout(async function () {
+    await checkNumberCallback(
+      cleanArticle._id,
+      articleId,
+      listSentences.length,
+    );
+  }, 30 * 1000);
+  // return {
+  //   cleanArticleId: cleanArticle._id,
+  //   numberOfSentences: listSentences.length,
+  // };
+  return { status: 1 };
 };
 
 // const replaceAllophones = async (
@@ -139,6 +147,7 @@ const checkNumberCallback = async (
   // Nếu đã lưu được số câu (số câu đã call_back về) = số câu gửi đi thì đánh dấu thành công
   if (cleanArticle.sentences.length === numberOfSentences) {
     await Article.findOneAndUpdate({ _id: articleId }, { status: 3 });
+    console.log('Chuyển trạng thái thành đã chuẩn hoá máy');
   } else {
     await Sentence.deleteMany({
       _id: {
@@ -147,6 +156,7 @@ const checkNumberCallback = async (
     });
     await CleanArticle.findOneAndDelete({ _id: cleanArticleId });
     await Article.findOneAndUpdate({ _id: articleId }, { status: 2 });
+    console.log('Chuyển trạng thái thành chuẩn hoá máy lỗi');
   }
   return { status: 1 };
 };

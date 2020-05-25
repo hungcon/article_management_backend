@@ -17,6 +17,10 @@ router.post(
   '/get-allophones',
   asyncMiddleware(articleController.getAllophones),
 );
+router.post(
+  '/get-allophones-of-words',
+  asyncMiddleware(articleController.getAllophonesOfWords),
+);
 
 router.post(
   '/replace-allophones',
