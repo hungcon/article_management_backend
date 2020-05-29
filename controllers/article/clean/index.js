@@ -13,32 +13,19 @@ const getCleanArticleById = async (req, res) => {
 
 const cleanArticle = async (req, res) => {
   const { articleId } = req.body;
-  const {
-    status,
-    // cleanArticleId,
-    // numberOfSentences,
-  } = await cleanArticleService.cleanArticle(articleId);
-  // let status;
-  // eslint-disable-next-line func-names
-  // setTimeout(async function () {
-  //   status = await cleanArticleService.checkNumberCallback(
-  //     cleanArticleId,
-  //     articleId,
-  //     numberOfSentences,
-  //   );
-  // }, 30 * 1000);
+  const { status } = await cleanArticleService.cleanArticle(articleId);
   return res.send({ status });
 };
 
-const replaceSentence = async (req, res) => {
-  const { id } = req.body;
-  const sentence = await cleanArticleService.replaceSentence(id);
-  return res.send(sentence);
+const syntheticArticle = async (req, res) => {
+  const { cleanArticleId } = req.body;
+  const { status } = await cleanArticleService.syntheticArticle(cleanArticleId);
+  return res.send({ status });
 };
 
 module.exports = {
   getCleanArticles,
   getCleanArticleById,
   cleanArticle,
-  replaceSentence,
+  syntheticArticle,
 };

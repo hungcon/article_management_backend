@@ -12,13 +12,18 @@ router.post(
 );
 
 router.post(
+  '/get-clean-article-by-id',
+  asyncMiddleware(cleanArticleController.getCleanArticleById),
+);
+
+router.post(
   '/clean-article',
   asyncMiddleware(cleanArticleController.cleanArticle),
 );
 
 router.post(
-  '/get-clean-article-by-id',
-  asyncMiddleware(cleanArticleController.getCleanArticleById),
+  '/synthetic-article',
+  asyncMiddleware(cleanArticleController.syntheticArticle),
 );
 
 router.post(

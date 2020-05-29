@@ -22,6 +22,8 @@ router.post(
   asyncMiddleware(articleController.getAllophonesOfWords),
 );
 
+router.post('/get-audio-url', asyncMiddleware(articleController.getAudioUrl));
+
 router.post(
   '/replace-allophones',
   asyncMiddleware(articleController.replaceAllophones),

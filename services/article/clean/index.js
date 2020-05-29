@@ -1,8 +1,16 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-undef */
 /* eslint-disable func-names */
 /* eslint-disable no-shadow */
 const mongoose = require('mongoose');
 // const cheerio = require('cheerio');
-const { getAllophones, splitSentences } = require('../../cleanText');
+const {
+  getAllophones,
+  splitSentences,
+  getAudioSentenceLink,
+} = require('../../cleanText');
+
+const { concatByLink } = require('../../audio/join_audio');
 
 const Article = require('../../../models/article');
 const CleanArticle = require('../../../models/cleanArticle');
@@ -87,55 +95,7 @@ const cleanArticle = async (articleId) => {
       listSentences.length,
     );
   }, 30 * 1000);
-  // return {
-  //   cleanArticleId: cleanArticle._id,
-  //   numberOfSentences: listSentences.length,
-  // };
   return { status: 1 };
-};
-
-// const replaceAllophones = async (
-//   allophones,
-//   wordToReplace,
-//   index,
-//   replaceWord,
-// ) => {
-//   const $ = cheerio.load(allophones, {
-//     xmlMode: true,
-//     decodeEntities: false,
-//   });
-//   const listIndex = [];
-//   $('s')
-//     .find('mtu')
-//     .each(function (index) {
-//       if (
-//         $(this).get(0).attribs.nsw === 'loanword' &&
-//         $(this).get(0).attribs.orig === 'covid'
-//       ) {
-//         listIndex.push(index);
-//       }
-//     });
-//   const indexToReplace = listIndex[index - 1];
-//   $('s')
-//     .find('mtu')
-//     .each(function (index) {
-//       if (
-//         $(this).get(0).attribs.nsw === 'loanword' &&
-//         $(this).get(0).attribs.orig === 'covid' &&
-//         index === indexToReplace
-//       ) {
-//         const tagToReplace = $(this).html();
-//         const res = tagToReplace.replace(wordToReplace, replaceWord).trim();
-//         $(this).children().replaceWith(res);
-//       }
-//     });
-//   return $.html();
-// };
-
-const replaceSentence = async (id) => {
-  const sentence = await Sentence.findOne({ _id: id });
-  // const newAllophones = replaceAllophones(sentence.allophones);
-  return sentence;
 };
 
 const checkNumberCallback = async (
@@ -161,10 +121,61 @@ const checkNumberCallback = async (
   return { status: 1 };
 };
 
+const syntheticArticle = async (cleanArticleId) => {
+  const cleanArticle = await CleanArticle.findOne({
+    _id: cleanArticleId,
+  }).populate({
+    path: 'sentences',
+    model: Sentence,
+    options: {
+      sort: { sentenceId: 1 },
+    },
+  }).populate({
+    path: 'article',
+    model: Article,
+  });
+  const articleId = cleanArticle.article._id;
+  await Article.findOneAndUpdate({ _id: articleId }, { status: 6});
+  const listSentences = cleanArticle.sentences;
+  for (let i = 0; i < listSentences.length; i += 1) {
+    await getAudioSentenceLink(
+      listSentences[i].allophones,
+      cleanArticleId,
+      listSentences[i].sentenceId,
+      'vbee-tts-voice-hn_male_manhdung_news_48k-h',
+    );
+  }
+  setTimeout(async function () {
+    await checkCallbackAudio(listSentences.length, articleId, cleanArticleId);
+  }, 2 * 60 * 1000);
+  return { status: 1 };
+};
+
+const checkCallbackAudio = async (numberOfSentences,articleId, cleanArticleId) => {
+  LIST_AUDIO_LINK.sort(function(a, b) {
+      return a.sentenceId - b.sentenceId;
+  });
+  if (LIST_AUDIO_LINK.length !== numberOfSentences) {
+    console.log(`Tổng hợp lỗi: ' ${cleanArticleId}`);
+    await Article.findOneAndUpdate({ _id: articleId }, { status: 7});
+    LIST_AUDIO_LINK= [];
+    return {status: 0};
+  }
+  const links = [];
+  for(const audioLink of LIST_AUDIO_LINK) {
+    links.push(audioLink.link);
+  }
+  const filePath = await concatByLink({links, cleanArticleId})
+  await Article.findOneAndUpdate({ _id: articleId }, { status: 8});
+  await CleanArticle.findOneAndUpdate({_id: cleanArticleId}, {$set: {linkAudio: filePath}})
+  LIST_AUDIO_LINK = [];
+  return {status: 1};
+};
+
 module.exports = {
   getCleanArticles,
   getCleanArticleById,
   cleanArticle,
-  replaceSentence,
   checkNumberCallback,
+  syntheticArticle,
 };

@@ -6,12 +6,7 @@ const CleanArticle = require('../../models/cleanArticle');
 // const Abbreviations = require('../../models/abbreviations');
 // const WordInfo = require('../../models/wordInfo');
 const Sentence = require('../../models/sentence');
-const {
-  // getAllophones,
-  // getWords,
-  parseXml,
-  // splitSentences,
-} = require('../cleanText');
+const { parseXml } = require('../cleanText');
 
 const storeAllophones = async (allophones, cleanArticleId, sentenceId) => {
   const cleanText = await parseXml(allophones);

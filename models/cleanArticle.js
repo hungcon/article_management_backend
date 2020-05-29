@@ -13,6 +13,10 @@ const CleanArticleSchema = new mongoose.Schema({
       ref: 'Sentence',
     },
   ],
+  linkAudio: {
+    type: String,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
