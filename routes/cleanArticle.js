@@ -17,6 +17,11 @@ router.post(
 );
 
 router.post(
+  '/get-clean-article-by-article-id',
+  asyncMiddleware(cleanArticleController.getCleanArticleByArticleId),
+);
+
+router.post(
   '/clean-article',
   asyncMiddleware(cleanArticleController.cleanArticle),
 );
@@ -27,8 +32,12 @@ router.post(
 );
 
 router.post(
-  '/replace-sentence',
-  asyncMiddleware(cleanArticleController.replaceSentence),
+  '/normalize-word',
+  asyncMiddleware(cleanArticleController.normalizeWord),
 );
 
+router.post(
+  '/finish-normalize',
+  asyncMiddleware(cleanArticleController.finishNormalize),
+);
 module.exports = router;

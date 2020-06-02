@@ -27,7 +27,7 @@ const storeAllophones = async (allophones, cleanArticleId, sentenceId) => {
   return { status: 1 };
 };
 
-const replaceAllophones = async (message, sentenceId, position, orig, type) => {
+const replaceAllophones = async (message, sentenceId, orig, type, index) => {
   const $replace = cheerio.load(message, {
     xmlMode: true,
     decodeEntities: false,
@@ -43,22 +43,22 @@ const replaceAllophones = async (message, sentenceId, position, orig, type) => {
   const listIndex = [];
   $('s')
     .find('mtu')
-    .each(function (index) {
+    .each(function (i) {
       if (
         $(this).get(0).attribs.nsw === type &&
         $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase()
       ) {
-        listIndex.push(index);
+        listIndex.push(i);
       }
     });
-  const indexToReplace = listIndex[position - 1];
+  const indexToReplace = listIndex[index];
   $('s')
     .find('mtu')
-    .each(function (index) {
+    .each(function (j) {
       if (
         $(this).get(0).attribs.nsw === type &&
         $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase() &&
-        index === indexToReplace
+        j === indexToReplace
       ) {
         $(this).children().remove();
         $(this).append(replaceTag.trim());
@@ -66,7 +66,7 @@ const replaceAllophones = async (message, sentenceId, position, orig, type) => {
     });
   await Sentence.findOneAndUpdate(
     { _id: sentenceId },
-    { allophones: $.html(), text: await parseXml($.html()) },
+    { allophones: $.html() },
   );
   return { status: 1 };
 };

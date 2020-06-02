@@ -104,14 +104,15 @@ const addConfig = async ({ general, config, article }) => {
 };
 
 const updateConfig = async ({ configId, config }) => {
-  await Configuration.update(
+  await Configuration.findOneAndUpdate(
     { _id: configId },
     {
       $set: {
-        'website.name': config.website,
-        'category.name': config.category,
+        website: (await Website.findOne({ name: config.website }))._id,
+        category: (await Category.findOne({ name: config.category }))._id,
         schedules: config.schedules,
-        status: !config.status ? '02' : '01',
+        turnOnSchedule: !config.turnOnSchedule ? '02' : '01',
+        autoSynthetic: !config.autoSynthetic ? '02' : '01',
         updatedAt: Date.now(),
       },
     },

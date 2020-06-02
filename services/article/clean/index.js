@@ -4,6 +4,7 @@
 /* eslint-disable no-shadow */
 const mongoose = require('mongoose');
 // const cheerio = require('cheerio');
+const axios = require('axios');
 const {
   getAllophones,
   splitSentences,
@@ -22,7 +23,7 @@ const Category = require('../../../models/category');
 const Sentence = require('../../../models/sentence');
 
 const getCleanArticles = async () => {
-  let articles = await CleanArticle.find({})
+  const articles = await CleanArticle.find({})
     .populate({
       path: 'sentences',
       model: Sentence,
@@ -44,7 +45,6 @@ const getCleanArticles = async () => {
         },
       ],
     });
-  articles = articles.filter((article) => article.article.status === 3);
   return articles;
 };
 
@@ -74,6 +74,15 @@ const getCleanArticleById = async (cleanArticleId) => {
   return article;
 };
 
+const getCleanArticleByArticleId = async (articleId) => {
+  let articles = await CleanArticle.find({}).populate({
+    path: 'article',
+    model: Article,
+  });
+  articles = articles.filter((article) => article.article._id.toString() === articleId);
+return articles[0];
+};
+
 const cleanArticle = async (articleId) => {
   const id = mongoose.Types.ObjectId(articleId);
   const article = await Article.findById(id);
@@ -94,8 +103,8 @@ const cleanArticle = async (articleId) => {
       articleId,
       listSentences.length,
     );
-  }, 30 * 1000);
-  return { status: 1 };
+  }, 1 * 60 * 1000);
+  return { cleanArticleId:  cleanArticle._id};
 };
 
 const checkNumberCallback = async (
@@ -134,6 +143,10 @@ const syntheticArticle = async (cleanArticleId) => {
     path: 'article',
     model: Article,
   });
+  // Chuan hoa may loi thi da xoa cleanArticle
+  if(cleanArticle === null) {
+    return { status: 0 };
+  }
   const articleId = cleanArticle.article._id;
   await Article.findOneAndUpdate({ _id: articleId }, { status: 6});
   const listSentences = cleanArticle.sentences;
@@ -147,7 +160,7 @@ const syntheticArticle = async (cleanArticleId) => {
   }
   setTimeout(async function () {
     await checkCallbackAudio(listSentences.length, articleId, cleanArticleId);
-  }, 2 * 60 * 1000);
+  }, 1 * 60 * 1000);
   return { status: 1 };
 };
 
@@ -156,7 +169,7 @@ const checkCallbackAudio = async (numberOfSentences,articleId, cleanArticleId) =
       return a.sentenceId - b.sentenceId;
   });
   if (LIST_AUDIO_LINK.length !== numberOfSentences) {
-    console.log(`Tổng hợp lỗi: ' ${cleanArticleId}`);
+    console.log(`Tổng hợp lỗi:  ${cleanArticleId}`);
     await Article.findOneAndUpdate({ _id: articleId }, { status: 7});
     LIST_AUDIO_LINK= [];
     return {status: 0};
@@ -172,10 +185,51 @@ const checkCallbackAudio = async (numberOfSentences,articleId, cleanArticleId) =
   return {status: 1};
 };
 
+const normalizeWord  = async (listExpansionChange, articleId) => {
+  for(const expansionChange of listExpansionChange) {
+    const { id, expansion, index, word, type } = expansionChange;
+    await axios({
+      method: 'POST',
+      url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
+      data: {
+        function_call_invoke:
+          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
+        input_text: expansion,
+        rate: 1,
+        voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
+        bit_rate: '128000',
+        user_id: '46030',
+        app_id: '5b8776d92942cc5b459928b5',
+        input_type: 'TEXT',
+        request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
+        output_type: 'ALLOPHONES',
+        call_back: `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+      },
+    });
+  }
+  await Article.findOneAndUpdate({_id: articleId}, {$set: {status: 4}});
+  console.log('Chuyển trạng thái bài báo sang đang chuẩn hoá tay');
+  return {status: 1}
+}
+
+const finishNormalize = async (cleanArticleId) => {
+  const cleanArticle = await CleanArticle.findOne({_id: cleanArticleId}).populate({
+    path: 'article',
+    model: Article,
+  });
+  const articleId = cleanArticle.article._id;
+  await Article.findOneAndUpdate({_id: articleId}, {$set: {status: 5}});
+  console.log('Chuyển trạng thái bài báo sang đã chuẩn hoá tay');
+  return {status: 1};
+}
+
 module.exports = {
   getCleanArticles,
   getCleanArticleById,
+  getCleanArticleByArticleId,
   cleanArticle,
   checkNumberCallback,
   syntheticArticle,
+  normalizeWord,
+  finishNormalize,
 };

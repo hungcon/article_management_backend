@@ -83,6 +83,14 @@ const updateCategory = async (link, title, category) => {
   return update;
 };
 
+const updateStatus = async (articleId) => {
+  const update = await Article.findOneAndUpdate(
+    { _id: articleId },
+    { $set: { status: 4 } },
+  );
+  return update;
+};
+
 const insertArticle = async (article) => {
   const newArticle = await Article.create(article);
   return newArticle;
@@ -107,6 +115,7 @@ module.exports = {
   getValidArticles,
   updateValidArticle,
   isCategoryAdded,
+  updateStatus,
   deleteValidArticle,
   getValidArticleById,
   updateCategory,

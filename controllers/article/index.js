@@ -14,13 +14,13 @@ const getAllophones = async (req, res) => {
 
 const getAllophonesOfWords = async (req, res) => {
   const { message } = req.body;
-  const { sentenceId, position, orig, type } = req.query;
+  const { sentenceId, orig, type, index } = req.query;
   const status = await articleService.replaceAllophones(
     message,
     sentenceId,
-    position,
     orig,
     type,
+    index,
   );
   return res.send(status);
 };
