@@ -68,5 +68,5 @@ server.listen(PORT, () => {
   })();
 });
 
-// require('./services/crawl').runSchedule();
-// require('./services/crawl').saveArticle();
+require('./services/crawl').runSchedule();
+require('./services/crawl').saveArticle();

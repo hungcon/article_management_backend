@@ -1,5 +1,7 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-const */
+const { getCleanArticleByArticleId } = require('../clean/index');
+
 const Article = require('../../../models/article');
 const InvalidArticle = require('../../../models/invalidArticle');
 const Website = require('../../../models/website');
@@ -33,7 +35,21 @@ const getValidArticles = async (website, category, date, status) => {
       path: 'category',
       model: Category,
     });
-  return articles;
+  const listArticles = [];
+  for (let i = 0; i < articles.length; i += 1) {
+    let article = {
+      key: i,
+      cleanArticleId: (
+        await getCleanArticleByArticleId(articles[i]._id.toString())
+      )._id,
+      title: articles[i].title,
+      category: articles[i].category,
+      status: articles[i].status,
+      website: articles[i].website,
+    };
+    listArticles.push(article);
+  }
+  return listArticles;
 };
 
 const getValidArticleById = async (articleId) => {

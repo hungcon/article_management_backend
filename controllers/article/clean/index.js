@@ -26,8 +26,11 @@ const cleanArticle = async (req, res) => {
 };
 
 const syntheticArticle = async (req, res) => {
-  const { cleanArticleId } = req.body;
-  const { status } = await cleanArticleService.syntheticArticle(cleanArticleId);
+  const { cleanArticleId, voiceSelect } = req.body;
+  const { status } = await cleanArticleService.syntheticArticle(
+    cleanArticleId,
+    voiceSelect,
+  );
   return res.send({ status });
 };
 

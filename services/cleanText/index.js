@@ -70,7 +70,6 @@ const getAudioSentenceLink = async (
         input_text: allophones,
         rate: 1,
         voice,
-        // voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
         bit_rate: '128000',
         user_id: '46030',
         app_id: '5b8776d92942cc5b459928b5',

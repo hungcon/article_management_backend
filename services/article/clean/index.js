@@ -15,9 +15,6 @@ const { concatByLink } = require('../../audio/join_audio');
 
 const Article = require('../../../models/article');
 const CleanArticle = require('../../../models/cleanArticle');
-// const Loanwords = require('../../../models/loanwords');
-// const Abbreviations = require('../../../models/abbreviations');
-// const WordInfo = require('../../../models/wordInfo');
 const Website = require('../../../models/website');
 const Category = require('../../../models/category');
 const Sentence = require('../../../models/sentence');
@@ -80,7 +77,7 @@ const getCleanArticleByArticleId = async (articleId) => {
     model: Article,
   });
   articles = articles.filter((article) => article.article._id.toString() === articleId);
-return articles[0];
+  return articles[0];
 };
 
 const cleanArticle = async (articleId) => {
@@ -130,7 +127,7 @@ const checkNumberCallback = async (
   return { status: 1 };
 };
 
-const syntheticArticle = async (cleanArticleId) => {
+const syntheticArticle = async (cleanArticleId, voiceSelect) => {
   const cleanArticle = await CleanArticle.findOne({
     _id: cleanArticleId,
   }).populate({
@@ -155,7 +152,7 @@ const syntheticArticle = async (cleanArticleId) => {
       listSentences[i].allophones,
       cleanArticleId,
       listSentences[i].sentenceId,
-      'vbee-tts-voice-hn_male_manhdung_news_48k-h',
+      voiceSelect,
     );
   }
   setTimeout(async function () {
@@ -180,6 +177,7 @@ const checkCallbackAudio = async (numberOfSentences,articleId, cleanArticleId) =
   }
   const filePath = await concatByLink({links, cleanArticleId})
   await Article.findOneAndUpdate({ _id: articleId }, { status: 8});
+  console.log("Chuyển trạng thái bài báo sang đã chuyển audio")
   await CleanArticle.findOneAndUpdate({_id: cleanArticleId}, {$set: {linkAudio: filePath}})
   LIST_AUDIO_LINK = [];
   return {status: 1};
