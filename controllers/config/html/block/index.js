@@ -1,4 +1,5 @@
 const blockConfigService = require('../../../../services/config/html/block');
+const crawlService = require('../../../../services/crawl');
 
 const addBlockConfig = async (req, res) => {
   await blockConfigService.addBlockConfig({
@@ -7,6 +8,7 @@ const addBlockConfig = async (req, res) => {
     block: req.body.block,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -16,6 +18,7 @@ const updateBlockConfig = async (req, res) => {
     block: req.body.block,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -25,6 +28,7 @@ const deleteBlockConfig = async (req, res) => {
     blockConfigId: req.body.blockConfigId,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 

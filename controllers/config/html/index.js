@@ -1,4 +1,5 @@
 const htmlConfigService = require('../../../services/config/html');
+const crawlService = require('../../../services/crawl');
 
 const addHtmlConfig = async (req, res) => {
   await htmlConfigService.addHtmlConfig({
@@ -6,6 +7,7 @@ const addHtmlConfig = async (req, res) => {
     html: req.body.html,
     addBlock: req.body.addBlock,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -14,6 +16,7 @@ const deleteHtmlConfig = async (req, res) => {
     configId: req.body.configId,
     htmlConfigId: req.body.htmlConfigId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -23,6 +26,7 @@ const updateHtmlConfig = async (req, res) => {
     html: req.body.html,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 

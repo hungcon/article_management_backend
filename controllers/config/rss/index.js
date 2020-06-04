@@ -1,4 +1,5 @@
 const rssConfigService = require('../../../services/config/rss');
+const crawlService = require('../../../services/crawl');
 
 const updateRssConfig = async (req, res) => {
   await rssConfigService.updateRssConfig({
@@ -6,6 +7,7 @@ const updateRssConfig = async (req, res) => {
     rssConfig: req.body.rssConfig,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -14,6 +16,7 @@ const addRssConfig = async (req, res) => {
     configId: req.body.configId,
     rssConfig: req.body.rssConfig,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -22,6 +25,7 @@ const deleteRssConfig = async (req, res) => {
     configId: req.body.configId,
     rssConfigId: req.body.rssConfigId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 

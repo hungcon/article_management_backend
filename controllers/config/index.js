@@ -1,4 +1,5 @@
 const configService = require('../../services/config');
+const crawlService = require('../../services/crawl');
 
 const getConfig = async (req, res) => {
   const config = await configService.getConfiguration();
@@ -22,6 +23,7 @@ const updateArticleConfig = async (req, res) => {
     articleDemoLink: req.body.articleDemoLink,
     configId: req.body.configId,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -31,6 +33,7 @@ const addConfig = async (req, res) => {
     config: req.body.config,
     article: req.body.article,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
@@ -39,11 +42,13 @@ const updateConfig = async (req, res) => {
     configId: req.body.configId,
     config: req.body.config,
   });
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 
 const deleteConfig = async (req, res) => {
   await configService.deleteConfig(req.body.configId);
+  await crawlService.reRunSchedule();
   return res.send({ status: 1 });
 };
 

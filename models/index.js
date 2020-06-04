@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
-const { MONGODB_URI } = process.env;
+const { MONGO_HOST, MONGO_PORT, MONGO_DATABASE } = process.env;
 
-mongoose.connect(MONGODB_URI, {
+const MONGO_URI = `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}`;
+
+mongoose.connect(MONGO_URI, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useFindAndModify: false,
@@ -17,5 +19,5 @@ mongoose.connection.on('error', err => {
 });
 
 mongoose.connection.once('open', () => {
-  console.log(`Connected to MongoDB: ${MONGODB_URI}`);
+  console.log(`Connected to MongoDB: ${MONGO_URI}`);
 });

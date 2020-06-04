@@ -95,16 +95,16 @@ const cleanArticle = async (articleId) => {
     await getAllophones(listSentences[i], cleanArticle._id, i);
   }
   setTimeout(async function () {
-    await checkNumberCallback(
+    await checkCallbackAllophones(
       cleanArticle._id,
       articleId,
       listSentences.length,
     );
-  }, 1 * 60 * 1000);
+  }, 2 * 60 * 1000);
   return { cleanArticleId:  cleanArticle._id};
 };
 
-const checkNumberCallback = async (
+const checkCallbackAllophones = async (
   cleanArticleId,
   articleId,
   numberOfSentences,
@@ -157,7 +157,7 @@ const syntheticArticle = async (cleanArticleId, voiceSelect) => {
   }
   setTimeout(async function () {
     await checkCallbackAudio(listSentences.length, articleId, cleanArticleId);
-  }, 1 * 60 * 1000);
+  }, 2 * 60 * 1000);
   return { status: 1 };
 };
 
@@ -226,7 +226,8 @@ module.exports = {
   getCleanArticleById,
   getCleanArticleByArticleId,
   cleanArticle,
-  checkNumberCallback,
+  checkCallbackAllophones,
+  checkCallbackAudio,
   syntheticArticle,
   normalizeWord,
   finishNormalize,
