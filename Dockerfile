@@ -1,4 +1,4 @@
-FROM node:12.16.3
+FROM node:12.18.0
 WORKDIR /app
 COPY package.json ./
 RUN npm i

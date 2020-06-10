@@ -30,4 +30,24 @@ router.post(
   asyncMiddleware(validArticleController.getValidArticleById),
 );
 
+router.post(
+  '/clean-article',
+  asyncMiddleware(validArticleController.cleanArticle),
+);
+
+router.post(
+  '/synthetic-article',
+  asyncMiddleware(validArticleController.syntheticArticle),
+);
+
+router.post(
+  '/normalize-word',
+  asyncMiddleware(validArticleController.normalizeWord),
+);
+
+router.post(
+  '/finish-normalize',
+  asyncMiddleware(validArticleController.finishNormalize),
+);
+
 module.exports = router;

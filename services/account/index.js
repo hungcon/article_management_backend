@@ -12,7 +12,7 @@ const signIn = async (userName, password) => {
   if (!user) {
     return {
       success: false,
-      err: 'Account do not exist',
+      err: 'Tài khoản không tồn tại',
       token: null,
     };
   }
@@ -20,7 +20,7 @@ const signIn = async (userName, password) => {
   if (!isCorrectPassword) {
     return {
       success: false,
-      err: 'Incorrect password',
+      err: 'Mật khẩu không đúng',
       token: null,
     };
   }

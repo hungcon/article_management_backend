@@ -40,9 +40,15 @@ const ArticleSchema = new mongoose.Schema({
       type: 'String',
     },
   ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  sentences: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Sentence',
+    },
+  ],
+  linkAudio: {
+    type: String,
+    default: '',
   },
   status: {
     type: 'Number',
@@ -57,6 +63,10 @@ const ArticleSchema = new mongoose.Schema({
       8, // Đã chuyển audio
     ],
     default: 1,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

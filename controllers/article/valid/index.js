@@ -42,10 +42,44 @@ const getValidArticleById = async (req, res) => {
   return res.send(article);
 };
 
+const cleanArticle = async (req, res) => {
+  const { articleId } = req.body;
+  const { status } = await validArticleService.cleanArticle(articleId);
+  return res.send({ status });
+};
+
+const syntheticArticle = async (req, res) => {
+  const { articleId, voiceSelect } = req.body;
+  const { status } = await validArticleService.syntheticArticle(
+    articleId,
+    voiceSelect,
+  );
+  return res.send({ status });
+};
+
+const normalizeWord = async (req, res) => {
+  const { listExpansionChange, articleId } = req.body;
+  const { status } = await validArticleService.normalizeWord(
+    listExpansionChange,
+    articleId,
+  );
+  return res.send({ status });
+};
+
+const finishNormalize = async (req, res) => {
+  const { articleId } = req.body;
+  const { status } = await validArticleService.finishNormalize(articleId);
+  return res.send({ status });
+};
+
 module.exports = {
   getValidArticles,
   updateValidArticle,
   deleteValidArticle,
   getValidArticleById,
   addValidArticle,
+  cleanArticle,
+  syntheticArticle,
+  normalizeWord,
+  finishNormalize,
 };

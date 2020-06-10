@@ -1,23 +1,17 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-const */
 const cheerio = require('cheerio');
-const CleanArticle = require('../../models/cleanArticle');
-// const Loanwords = require('../../models/loanwords');
-// const Abbreviations = require('../../models/abbreviations');
-// const WordInfo = require('../../models/wordInfo');
 const Sentence = require('../../models/sentence');
-const { parseXml } = require('../cleanText');
+const Article = require('../../models/article');
 
-const storeAllophones = async (allophones, cleanArticleId, sentenceId) => {
-  const cleanText = await parseXml(allophones);
+const storeAllophones = async (allophones, articleId, sentenceId) => {
   const newSentence = {
     sentenceId,
     allophones,
-    text: cleanText,
   };
   const sentence = await Sentence.create(newSentence);
-  await CleanArticle.findOneAndUpdate(
-    { _id: cleanArticleId },
+  await Article.findOneAndUpdate(
+    { _id: articleId },
     {
       $push: {
         sentences: sentence._id,

@@ -22,10 +22,10 @@ const splitSentences = async (text) => {
   }
 };
 
-const getAllophones = async (text, cleanArticleId, sentenceId) => {
+const getAllophones = async (text, articleId, sentenceId) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-allophones?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
+      `${CALLBACK_URL}/get-allophones?articleId=${articleId}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -43,7 +43,7 @@ const getAllophones = async (text, cleanArticleId, sentenceId) => {
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
+        call_back: `${CALLBACK_URL}/get-allophones?articleId=${articleId}&sentenceId=${sentenceId}`,
       },
     });
     return data;
@@ -54,13 +54,13 @@ const getAllophones = async (text, cleanArticleId, sentenceId) => {
 
 const getAudioSentenceLink = async (
   allophones,
-  cleanArticleId,
+  articleId,
   sentenceId,
   voice,
 ) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-audio-url?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
+      `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -76,7 +76,7 @@ const getAudioSentenceLink = async (
         input_type: 'ALLOPHONES',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'AUDIO',
-        call_back: `${CALLBACK_URL}/get-audio-url?cleanArticleId=${cleanArticleId}&sentenceId=${sentenceId}`,
+        call_back: `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&sentenceId=${sentenceId}`,
       },
     });
     return data;

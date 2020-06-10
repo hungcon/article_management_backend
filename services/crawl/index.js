@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const configService = require('../config');
 const { getPublicDate } = require('../../utils/date');
 const { extractLinks, extractArticle } = require('./extract');
-const { cleanArticle, syntheticArticle } = require('../article/clean');
+const { cleanArticle, syntheticArticle } = require('../article/valid');
 const {
   isExistedInArticle,
   insertArticle,
@@ -117,7 +117,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  const CHECK_QUEUE_LINKS_TIME = 5 * 60 * 1000;
+  const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
       worker();
@@ -128,7 +128,7 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  const BREAK_TIME = 5 * 60 * 1000;
+  const BREAK_TIME = 10 * 60 * 1000;
   try {
     RUNNING_WORKER_FLAG = true;
     while (QUEUE_LINKS.length) {
@@ -202,16 +202,16 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       const newArticle = await insertArticle(article);
       console.log('Inserted article: ', newArticle.title);
       const articleId = newArticle._id;
-      const { cleanArticleId } = await cleanArticle(articleId);
+      await cleanArticle(articleId);
       if (autoSynthetic === '01') {
         setTimeout(async function () {
-          await syntheticArticle(cleanArticleId);
-        }, 2 * 60 * 1000);
+          await syntheticArticle(articleId);
+        }, 3 * 60 * 1000);
       } else {
         setTimeout(async function () {
           await updateStatus(articleId);
           console.log('Chuyển trạng thái bài báo thành đang chuẩn hoá tay');
-        }, 2 * 60 * 1000);
+        }, 3 * 60 * 1000);
       }
     } else {
       await invalidArticleWorker(

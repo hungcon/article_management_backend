@@ -68,16 +68,16 @@ function concatWav(wavs_input) {
   return bytes_return;
 }
 
-async function concatByLink({ links, cleanArticleId }) {
+async function concatByLink({ links, articleId }) {
   const list_byte_array = await Promise.all(
     links.map((link) => get_byte(link)),
   );
   const bytes = concatWav(list_byte_array);
   const formData = new FormData();
-  formData.append('file', bytes, { filename: `${cleanArticleId}.wav` });
+  formData.append('file', bytes, { filename: `${articleId}.wav` });
   const options = {
     method: 'POST',
-    url: `http://localhost:9000/api/v1/uploads/file?fileName=${cleanArticleId}.wav`,
+    url: `${process.env.UPLOAD_SERVICE_DOMAIN}/api/v1/uploads/file?fileName=${articleId}.wav`,
     headers: formData.getHeaders(),
     data: formData,
   };
