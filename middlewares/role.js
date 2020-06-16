@@ -13,7 +13,13 @@ module.exports = (req, res, next) => {
         error: 'Invalid user ',
       });
     }
-    next();
+    if (decodedToken.role !== 'admin') {
+      res.status(401).send({
+        error: 'Unauthorized ',
+      });
+    } else {
+      next();
+    }
   } catch (err) {
     res.status(401).send({
       error: 'Unauthorized ',

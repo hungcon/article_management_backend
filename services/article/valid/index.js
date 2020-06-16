@@ -1,8 +1,7 @@
-/* eslint-disable no-undef */
 /* eslint-disable func-names */
 /* eslint-disable prefer-const */
-const axios = require('axios');
 const Article = require('../../../models/article');
+const Audio = require('../../../models/audio');
 const InvalidArticle = require('../../../models/invalidArticle');
 const Website = require('../../../models/website');
 const Category = require('../../../models/category');
@@ -11,7 +10,8 @@ const {
   getAllophones,
   splitSentences,
   getAudioSentenceLink,
-} = require('../../cleanText');
+  getNormalizeWord,
+} = require('../../ttsengine');
 
 const { concatByLink } = require('../../audio/join_audio');
 
@@ -170,6 +170,9 @@ const syntheticArticle = async (articleId, voiceSelect) => {
       sort: { sentenceId: 1 },
     },
   });
+  if (article.status === 2) {
+    return { status: 0 };
+  }
   await Article.findOneAndUpdate({ _id: articleId }, { status: 6 });
   const listSentences = article.sentences;
   for (let i = 0; i < listSentences.length; i += 1) {
@@ -187,17 +190,18 @@ const syntheticArticle = async (articleId, voiceSelect) => {
 };
 
 const checkCallbackAudio = async (numberOfSentences, articleId) => {
-  LIST_AUDIO_LINK.sort(function (a, b) {
-    return a.sentenceId - b.sentenceId;
-  });
-  if (LIST_AUDIO_LINK.length !== numberOfSentences) {
+  const listAudioUrl = await Audio.find({ articleId });
+  if (listAudioUrl.length !== numberOfSentences) {
     console.log(`Tổng hợp lỗi:  ${articleId}`);
     await Article.findOneAndUpdate({ _id: articleId }, { status: 7 });
-    LIST_AUDIO_LINK = [];
+    await Audio.deleteMany({ articleId });
     return { status: 0 };
   }
+  listAudioUrl.sort(function (a, b) {
+    return a.sentenceId - b.sentenceId;
+  });
   const links = [];
-  for (const audioLink of LIST_AUDIO_LINK) {
+  for (const audioLink of listAudioUrl) {
     links.push(audioLink.link);
   }
   const filePath = await concatByLink({ links, articleId });
@@ -207,31 +211,14 @@ const checkCallbackAudio = async (numberOfSentences, articleId) => {
     { _id: articleId },
     { $set: { linkAudio: filePath } },
   );
-  LIST_AUDIO_LINK = [];
+  await Audio.deleteMany({ articleId });
   return { status: 1 };
 };
 
 const normalizeWord = async (listExpansionChange, articleId) => {
   for (const expansionChange of listExpansionChange) {
     const { id, expansion, index, word, type } = expansionChange;
-    await axios({
-      method: 'POST',
-      url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
-      data: {
-        function_call_invoke:
-          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
-        input_text: expansion,
-        rate: 1,
-        voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
-        bit_rate: '128000',
-        user_id: '46030',
-        app_id: '5b8776d92942cc5b459928b5',
-        input_type: 'TEXT',
-        request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
-        output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
-      },
-    });
+    await getNormalizeWord(id, expansion, index, word, type);
   }
   await Article.findOneAndUpdate({ _id: articleId }, { $set: { status: 4 } });
   console.log('Chuyển trạng thái bài báo sang đang chuẩn hoá tay');

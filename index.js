@@ -56,7 +56,6 @@ const server = http.createServer(app);
 global.QUEUE_LINKS = [];
 global.TASKS = [];
 global.RUNNING_WORKER_FLAG = false;
-global.LIST_AUDIO_LINK = [];
 
 server.listen(PORT, () => {
   console.log(`Sever is listening on port ${PORT}`);

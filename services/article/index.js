@@ -3,6 +3,7 @@
 const cheerio = require('cheerio');
 const Sentence = require('../../models/sentence');
 const Article = require('../../models/article');
+const Audio = require('../../models/audio');
 
 const storeAllophones = async (allophones, articleId, sentenceId) => {
   const newSentence = {
@@ -65,7 +66,18 @@ const replaceAllophones = async (message, sentenceId, orig, type, index) => {
   return { status: 1 };
 };
 
+const saveAudioUrl = async (link, sentenceId, articleId) => {
+  const audio = {
+    link,
+    sentenceId,
+    articleId,
+  };
+  await Audio.create(audio);
+  return { status: 1 };
+};
+
 module.exports = {
   storeAllophones,
   replaceAllophones,
+  saveAudioUrl,
 };

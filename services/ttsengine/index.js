@@ -85,22 +85,35 @@ const getAudioSentenceLink = async (
   }
 };
 
-async function parseXml(xml) {
-  const $ = cheerio.load(xml, { xmlMode: true });
-  //  = transformText(
-  const text = $('maryxml')
-    .text()
-    .replace(/\s\s+/g, ' ')
-    .replace(/\t/g, ' ')
-    .replace(/\./g, '.\n\n')
-    .replace(/\n/g, '')
-    .trim();
-  // );
-  return text;
-}
+const getNormalizeWord = async (id, expansion, index, word, type) => {
+  try {
+    const { data } = await axios({
+      method: 'POST',
+      url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
+      data: {
+        function_call_invoke:
+          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
+        input_text: expansion,
+        rate: 1,
+        voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
+        bit_rate: '128000',
+        user_id: '46030',
+        app_id: '5b8776d92942cc5b459928b5',
+        input_type: 'TEXT',
+        request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
+        output_type: 'ALLOPHONES',
+        call_back: `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    return '';
+  }
+};
+
 module.exports = {
-  parseXml,
   getAllophones,
   splitSentences,
   getAudioSentenceLink,
+  getNormalizeWord,
 };

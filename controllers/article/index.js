@@ -28,14 +28,8 @@ const getAllophonesOfWords = async (req, res) => {
 const getAudioUrl = async (req, res) => {
   const { link } = req.body;
   const { articleId, sentenceId } = req.query;
-  const sentenceAudio = {
-    link,
-    sentenceId,
-    articleId,
-  };
-  // eslint-disable-next-line no-undef
-  LIST_AUDIO_LINK = [...LIST_AUDIO_LINK, sentenceAudio];
-  return res.send({ status: 1 });
+  const status = await articleService.saveAudioUrl(link, sentenceId, articleId);
+  return res.send(status);
 };
 
 module.exports = {

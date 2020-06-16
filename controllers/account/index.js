@@ -6,6 +6,23 @@ const signIn = async (req, res) => {
   return res.send({ accessToken });
 };
 
+const getListAccounts = async (req, res) => {
+  const listAccount = await accountService.getListAccounts();
+  return res.send(listAccount);
+};
+
+const getUserInfo = async (req, res) => {
+  const { userName } = req.body;
+  const currentUser = await accountService.getUserInfo(userName);
+  return res.send({ currentUser });
+};
+
+const getAccount = async (req, res) => {
+  const { accountId } = req.body;
+  const currentUser = await accountService.getAccount(accountId);
+  return res.send({ currentUser });
+};
+
 const isAccountExisted = async (req, res) => {
   const { userName } = req.body;
   const account = await accountService.isAccountExisted(userName);
@@ -29,6 +46,12 @@ const addAccount = async (req, res) => {
   return res.send({ status: 1 });
 };
 
+const updateAccount = async (req, res) => {
+  const { account } = req.body;
+  await accountService.updateAccount(account);
+  return res.send({ status: 1 });
+};
+
 const updatePassword = async (req, res) => {
   const { userName, password } = req.body;
   await accountService.updatePassword(userName, password);
@@ -43,9 +66,13 @@ const deleteAccount = async (req, res) => {
 
 module.exports = {
   createAccount,
+  getListAccounts,
+  getUserInfo,
+  getAccount,
   signIn,
   isAccountExisted,
   deleteAccount,
   addAccount,
+  updateAccount,
   updatePassword,
 };

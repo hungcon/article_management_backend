@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+const { Schema } = mongoose;
 const SALT_ROUNDS = 10;
 
 const AccountSchema = new mongoose.Schema({
@@ -16,8 +17,13 @@ const AccountSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: 'user',
   },
+  websites: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Website',
+    },
+  ],
 });
 
 AccountSchema.pre('save', function (next) {

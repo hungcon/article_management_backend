@@ -200,9 +200,9 @@ const extractArticle = async (link, configuration) => {
   const text = $content('body')
     .text()
     .trim()
-    .replace(/\n+\s+\n/g, ' ')
-    .replace(/\n+/g, ' ')
-    .replace(/\n/g, ' ')
+    .replace(/\n+\s+\n/g, '\n')
+    .replace(/\n+/g, '\n')
+    .replace(/\n/g, '\n\n')
     .replace(/\.\//g, '');
 
   const article = {
