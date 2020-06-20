@@ -2,11 +2,11 @@ const articleService = require('../../services/article');
 
 const getAllophones = async (req, res) => {
   const { message } = req.body;
-  const { articleId, sentenceId } = req.query;
+  const { paragraphId, sentenceId } = req.query;
 
   const status = await articleService.storeAllophones(
     message,
-    articleId,
+    paragraphId,
     sentenceId,
   );
   return res.send(status);
@@ -27,8 +27,14 @@ const getAllophonesOfWords = async (req, res) => {
 
 const getAudioUrl = async (req, res) => {
   const { link } = req.body;
-  const { articleId, sentenceId } = req.query;
-  const status = await articleService.saveAudioUrl(link, sentenceId, articleId);
+  const { paragraphId, paragraphIndex, articleId, sentenceId } = req.query;
+  const status = await articleService.saveAudioUrl(
+    link,
+    paragraphId,
+    paragraphIndex,
+    articleId,
+    sentenceId,
+  );
   return res.send(status);
 };
 

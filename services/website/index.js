@@ -1,8 +1,8 @@
 const Website = require('../../models/website');
 
 const getWebsites = async () => {
-  const listWebsites = await Website.find({});
-  return listWebsites;
+  const websites = await Website.find({});
+  return websites;
 };
 
 const findWebsiteById = async (websiteId) => {
@@ -10,8 +10,8 @@ const findWebsiteById = async (websiteId) => {
   return website;
 };
 
-const addWebsite = async (name) => {
-  await Website.create({ name });
+const addWebsite = async (websiteInfo) => {
+  await Website.create(websiteInfo);
 };
 
 const isWebsiteExisted = async (name) => {

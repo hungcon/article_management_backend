@@ -18,8 +18,8 @@ const isWebsiteExisted = async (req, res) => {
 };
 
 const addWebsite = async (req, res) => {
-  const { name } = req.body;
-  await websiteService.addWebsite(name);
+  const { websiteInfo } = req.body;
+  await websiteService.addWebsite(websiteInfo);
   return res.send({ status: 1 });
 };
 

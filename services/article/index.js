@@ -2,17 +2,23 @@
 /* eslint-disable prefer-const */
 const cheerio = require('cheerio');
 const Sentence = require('../../models/sentence');
-const Article = require('../../models/article');
+const Paragraph = require('../../models/paragraph');
+// const Article = require('../../models/article');
 const Audio = require('../../models/audio');
 
-const storeAllophones = async (allophones, articleId, sentenceId) => {
+const storeAllophones = async (
+  allophones,
+  // articleId,
+  paragraphId,
+  sentenceId,
+) => {
   const newSentence = {
     sentenceId,
     allophones,
   };
   const sentence = await Sentence.create(newSentence);
-  await Article.findOneAndUpdate(
-    { _id: articleId },
+  await Paragraph.findOneAndUpdate(
+    { _id: paragraphId },
     {
       $push: {
         sentences: sentence._id,
@@ -40,7 +46,7 @@ const replaceAllophones = async (message, sentenceId, orig, type, index) => {
     .find('mtu')
     .each(function (i) {
       if (
-        $(this).get(0).attribs.nsw === type &&
+        // $(this).get(0).attribs.nsw === type &&
         $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase()
       ) {
         listIndex.push(i);
@@ -51,12 +57,13 @@ const replaceAllophones = async (message, sentenceId, orig, type, index) => {
     .find('mtu')
     .each(function (j) {
       if (
-        $(this).get(0).attribs.nsw === type &&
+        // $(this).get(0).attribs.nsw === type &&
         $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase() &&
         j === indexToReplace
       ) {
         $(this).children().remove();
         $(this).append(replaceTag.trim());
+        $(this).attr('nsw', type);
       }
     });
   await Sentence.findOneAndUpdate(
@@ -66,11 +73,19 @@ const replaceAllophones = async (message, sentenceId, orig, type, index) => {
   return { status: 1 };
 };
 
-const saveAudioUrl = async (link, sentenceId, articleId) => {
+const saveAudioUrl = async (
+  link,
+  paragraphId,
+  paragraphIndex,
+  articleId,
+  sentenceId,
+) => {
   const audio = {
     link,
-    sentenceId,
+    paragraphId,
+    paragraphIndex,
     articleId,
+    sentenceId,
   };
   await Audio.create(audio);
   return { status: 1 };

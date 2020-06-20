@@ -6,6 +6,11 @@ const WebsiteSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
+  appId: String,
+  bitRate: Number,
+  titleTime: Number,
+  sapoTime: Number,
+  paragraphTime: Number,
 });
 
 const Website = mongoose.model('Website', WebsiteSchema);

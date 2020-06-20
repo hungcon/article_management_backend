@@ -8,10 +8,10 @@ const getInValidArticles = async (website, category, date, status) => {
   let articles;
   const condition = {};
   if (website) {
-    condition.website = (await Website.findOne({ name: website }))._id;
+    condition.website = website;
   }
   if (category) {
-    condition.category = (await Category.findOne({ name: category }))._id;
+    condition.category = category;
   }
   if (date.startDate) {
     condition.createdAt = {

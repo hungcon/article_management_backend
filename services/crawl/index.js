@@ -50,7 +50,7 @@ const crawlLinks = async (
   autoSynthetic,
   articleConfiguration,
 ) => {
-  console.log('Running', website, category);
+  console.log('Running', website.name, category.name);
   const listArticlesPlaceholder = [];
   const { error, listArticles } = await extractLinks(type, multi);
   for (const article of listArticles) {
@@ -100,14 +100,10 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
         title: article.title,
         sapo: article.sapo,
         publicDate: await getPublicDate(publishDate, article.publicDate),
-        thumbnail: article.thumbnail,
         category: category._id,
         website: website._id,
-        sourceCode: article.sourceCode,
-        text: `${article.title}. ${article.text}`,
-        tags: article.tags || [],
+        text: `${article.text}`,
         numberOfWords: !article.text ? 0 : article.text.split(' ').length,
-        images: article.images,
       },
     };
   } catch (error) {
@@ -117,7 +113,8 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
+  // const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
+  const CHECK_QUEUE_LINKS_TIME = 30 * 1000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
       worker();
@@ -128,7 +125,8 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  const BREAK_TIME = 10 * 60 * 1000;
+  // const BREAK_TIME = 10 * 60 * 1000;
+  const BREAK_TIME = 30 * 1000;
   try {
     RUNNING_WORKER_FLAG = true;
     while (QUEUE_LINKS.length) {
@@ -201,18 +199,18 @@ const articleWorker = async (articleInfoAndConfiguration) => {
     if (isValidArticle(article)) {
       const newArticle = await insertArticle(article);
       console.log('Inserted article: ', newArticle.title);
-      const articleId = newArticle._id;
-      await cleanArticle(articleId);
-      if (autoSynthetic === '01') {
-        setTimeout(async function () {
-          await syntheticArticle(articleId);
-        }, 3 * 60 * 1000);
-      } else {
-        setTimeout(async function () {
-          await updateStatus(articleId);
-          console.log('Chuyển trạng thái bài báo thành đang chuẩn hoá tay');
-        }, 3 * 60 * 1000);
-      }
+      // const articleId = newArticle._id;
+      // await cleanArticle(articleId);
+      // if (autoSynthetic === '01') {
+      //   setTimeout(async function () {
+      //     await syntheticArticle(articleId);
+      //   }, 3 * 60 * 1000);
+      // } else {
+      //   setTimeout(async function () {
+      //     await updateStatus(articleId);
+      //     console.log('Chuyển trạng thái bài báo thành đang chuẩn hoá tay');
+      //   }, 3 * 60 * 1000);
+      // }
     } else {
       await invalidArticleWorker(
         link,

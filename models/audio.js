@@ -5,12 +5,10 @@ const AudioSchema = new mongoose.Schema({
   link: {
     type: String,
   },
-  sentenceId: {
-    type: String,
-  },
-  articleId: {
-    type: String,
-  },
+  articleId: String,
+  paragraphId: String,
+  paragraphIndex: String,
+  sentenceId: String,
 });
 
 const Audio = mongoose.model('Audio', AudioSchema);

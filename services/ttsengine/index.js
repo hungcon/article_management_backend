@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 const axios = require('axios');
-const cheerio = require('cheerio');
 require('dotenv').config();
 
 const splitSentences = async (text) => {
@@ -22,10 +21,10 @@ const splitSentences = async (text) => {
   }
 };
 
-const getAllophones = async (text, articleId, sentenceId) => {
+const getAllophones = async (text, articleId, paragraphId, sentenceId) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-allophones?articleId=${articleId}&sentenceId=${sentenceId}`,
+      `${CALLBACK_URL}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -43,7 +42,7 @@ const getAllophones = async (text, articleId, sentenceId) => {
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones?articleId=${articleId}&sentenceId=${sentenceId}`,
+        call_back: `${CALLBACK_URL}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
       },
     });
     return data;
@@ -54,13 +53,15 @@ const getAllophones = async (text, articleId, sentenceId) => {
 
 const getAudioSentenceLink = async (
   allophones,
+  paragraphId,
+  paragraphIndex,
   articleId,
   sentenceId,
   voice,
 ) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&sentenceId=${sentenceId}`,
+      `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -76,7 +77,7 @@ const getAudioSentenceLink = async (
         input_type: 'ALLOPHONES',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'AUDIO',
-        call_back: `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&sentenceId=${sentenceId}`,
+        call_back: `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
       },
     });
     return data;
@@ -86,6 +87,9 @@ const getAudioSentenceLink = async (
 };
 
 const getNormalizeWord = async (id, expansion, index, word, type) => {
+  console.log(
+    `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+  );
   try {
     const { data } = await axios({
       method: 'POST',

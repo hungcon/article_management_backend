@@ -12,18 +12,7 @@ const ArticleSchema = new mongoose.Schema({
     type: 'String',
   },
   publicDate: Date,
-  sourceCode: {
-    type: 'String',
-  },
   text: String,
-  thumbnail: {
-    type: 'String',
-  },
-  tags: [
-    {
-      type: 'String',
-    },
-  ],
   category: [
     {
       type: Schema.Types.ObjectId,
@@ -35,15 +24,10 @@ const ArticleSchema = new mongoose.Schema({
     ref: 'Website',
   },
   numberOfWords: Number,
-  images: [
-    {
-      type: 'String',
-    },
-  ],
-  sentences: [
+  paragraphs: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Sentence',
+      ref: 'Paragraph',
     },
   ],
   linkAudio: {

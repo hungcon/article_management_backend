@@ -2,9 +2,7 @@
 /* eslint-disable prefer-const */
 const axios = require('axios');
 const cheerio = require('cheerio');
-let { URL } = require('url');
 const entities = new (require('html-entities').AllHtmlEntities)();
-const { getLink } = require('../../utils/link');
 
 function getContent($) {
   try {
@@ -36,10 +34,6 @@ const extractArticle = async (link, configuration) => {
     sapoRedundancySelectors = [],
     titleSelector,
     titleRedundancySelectors = [],
-    thumbnailSelector,
-    thumbnailRedundancySelectors = [],
-    tagsSelector,
-    tagsRedundancySelectors = [],
     contentSelector,
     contentRedundancySelectors = [],
     textRedundancySelectors = [],
@@ -102,59 +96,6 @@ const extractArticle = async (link, configuration) => {
     }
   }
 
-  // TAGS
-  let tags;
-  if (tagsSelector && $(tagsSelector).length) {
-    const $tags = cheerio.load($.html($(tagsSelector)));
-    tagsRedundancySelectors.forEach((tagsRedundancySelector) =>
-      $tags(tagsRedundancySelector).remove(),
-    );
-    tags = getContent($tags);
-  } else {
-    const defaultTagsSelectors = [
-      'meta[name="new_keywords"]',
-      'meta[name="keywords"]',
-    ];
-    for (let i = 0; i < defaultTagsSelectors.length; i += 1) {
-      if ($(defaultTagsSelectors[i]).length) {
-        const $tags = cheerio.load($.html($(defaultTagsSelectors[i])));
-        const defaultTags = getContent($tags);
-        if (defaultTags) {
-          tags = defaultTags;
-          break;
-        }
-      }
-    }
-  }
-
-  // THUMBNAIL
-  let thumbnail;
-  const imagesSelector = $(contentSelector).find('img');
-  let images = [];
-  if (link) {
-    const { origin } = new URL(link);
-    if (thumbnailSelector) {
-      const $thumbnail = cheerio.load($.html($(thumbnailSelector)));
-      thumbnailRedundancySelectors.forEach((thumbnailRedundancySelector) =>
-        $thumbnail(thumbnailRedundancySelector).remove(),
-      );
-      thumbnail = getContent($thumbnail);
-      thumbnail = getLink(origin, thumbnail);
-      images.push(thumbnail);
-    } else {
-      thumbnail = imagesSelector.length
-        ? imagesSelector.eq(0).attr('src')
-        : null;
-      thumbnail = thumbnail ? getLink(origin, thumbnail) : undefined;
-    }
-
-    // Images
-    imagesSelector.each(function () {
-      const image = $(this).attr('src');
-      images.push(getLink(origin, image));
-    });
-  }
-
   /* Content */
   [
     'script',
@@ -201,6 +142,7 @@ const extractArticle = async (link, configuration) => {
     .text()
     .trim()
     .replace(/\n+\s+\n/g, '\n')
+    .replace(/\s\s+/g, '\n')
     .replace(/\n+/g, '\n')
     .replace(/\n/g, '\n\n')
     .replace(/\.\//g, '');
@@ -208,17 +150,7 @@ const extractArticle = async (link, configuration) => {
   const article = {
     title: title ? entities.decode(title.trim()) : undefined,
     sapo: sapo ? entities.decode(sapo.trim()) : undefined,
-    tags: tags
-      ? entities
-          .decode(tags.trim())
-          .split(/[,|\n|;]/)
-          .map((tag) => tag.trim())
-          .filter((tag) => tag.length)
-      : undefined,
-    thumbnail: thumbnail ? thumbnail.trim() : undefined,
-    sourceCode: content ? entities.decode(content.trim()) : undefined,
     text: text ? entities.decode(text.trim()) : undefined,
-    images,
   };
 
   return { article };
