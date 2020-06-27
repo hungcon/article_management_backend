@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const categoryController = require('../controllers/category');
+const categoryController = require('../controllers/categoryController');
 
 router.post(
   '/get-categories',

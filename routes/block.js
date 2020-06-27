@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const blockConfigController = require('../controllers/config/html/block');
+const blockConfigController = require('../controllers/configController/htmlController/blockController');
 
 // block
 router.post(

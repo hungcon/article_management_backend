@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const configController = require('../controllers/config');
+const configController = require('../controllers/configController');
 
 router.post('/get-configuration', asyncMiddleware(configController.getConfig));
 router.post(

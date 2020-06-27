@@ -4,7 +4,7 @@ const express = require('express');
 
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
-const invalidArticleController = require('../controllers/article/invalid');
+const invalidArticleController = require('../controllers/articleController/invalidController');
 
 router.post(
   '/get-invalid-articles',

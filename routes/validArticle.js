@@ -4,7 +4,7 @@ const express = require('express');
 
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
-const validArticleController = require('../controllers/article/valid');
+const validArticleController = require('../controllers/articleController/validController');
 
 router.post(
   '/add-valid-articles',

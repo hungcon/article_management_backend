@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const rssConfigController = require('../controllers/config/rss');
+const rssConfigController = require('../controllers/configController/rssController');
 // rss
 router.post(
   '/add-rss-config',

@@ -6,7 +6,7 @@ const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
 const roleMiddleware = require('../middlewares/role');
-const accountController = require('../controllers/account');
+const accountController = require('../controllers/accountController');
 
 router.post(
   '/create-account',

@@ -4,7 +4,7 @@ const express = require('express');
 
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
-const articleController = require('../controllers/article');
+const articleController = require('../controllers/articleController');
 
 router.get('/get-source', asyncMiddleware(articleController.getSource));
 

@@ -4,7 +4,7 @@ const express = require('express');
 
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
-const statisticController = require('../controllers/statistic');
+const statisticController = require('../controllers/statisticController');
 
 router.post(
   '/statistic',

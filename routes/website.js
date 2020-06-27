@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const websiteController = require('../controllers/website');
+const websiteController = require('../controllers/websiteController');
 
 router.post('/get-websites', asyncMiddleware(websiteController.getWebsites));
 

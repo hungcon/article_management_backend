@@ -5,8 +5,8 @@ const express = require('express');
 const router = express.Router();
 const asyncMiddleware = require('../middlewares/async');
 const authMiddleware = require('../middlewares/auth');
-const crawlController = require('../controllers/crawl');
-const extractController = require('../controllers/crawl/extract');
+const crawlController = require('../controllers/crawlController');
+const extractController = require('../controllers/crawlController/extract');
 
 router.post(
   '/crawl/run',
