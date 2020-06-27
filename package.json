@@ -19,7 +19,6 @@
     "cookie-parser": "^1.4.5",
     "follow-redirects":"^1.11.0",
     "cors": "^2.8.5",
-    "cron": "^1.8.2",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "ejs": "~2.5.7",

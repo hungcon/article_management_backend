@@ -23,6 +23,7 @@ const updateBlockConfig = async (req, res) => {
 };
 
 const deleteBlockConfig = async (req, res) => {
+  console.log(req.body);
   await blockConfigService.deleteBlockConfig({
     htmlConfigId: req.body.htmlConfigId,
     blockConfigId: req.body.blockConfigId,

@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 
-const { MONGO_HOST, MONGO_PORT, MONGO_DATABASE } = process.env;
+const {
+  MONGO_HOST,
+  MONGO_PORT,
+  MONGO_DATABASE,
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+} = process.env;
 
-const MONGO_URI = `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}`;
+const MONGO_URI = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin`;
 
 mongoose.connect(MONGO_URI, {
   useCreateIndex: true,

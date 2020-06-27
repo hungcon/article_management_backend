@@ -1,65 +1,74 @@
 /* eslint-disable func-names */
+const mongoose = require('mongoose');
 const Configuration = require('../../../models/configuration');
-const HtmlConfig = require('../../../models/htmlConfig');
-const BlockConfig = require('../../../models/blockConfig');
 
 const addHtmlConfig = async ({ html, addBlock, configId }) => {
-  await HtmlConfig.create(html, async function (err, doc) {
-    if (err) {
-      console.log(err);
-    }
-    await Configuration.findByIdAndUpdate(configId, {
-      $push: { html: doc._id },
-      $set: { updatedAt: Date.now() },
-    });
-    if (addBlock.length !== 0) {
-      for (let i = 0; i < addBlock.length; i += 1) {
-        await BlockConfig.create(addBlock[i], async function (
-          blockErr,
-          addedBlock,
-        ) {
-          if (blockErr) {
-            console.log(blockErr);
-          }
-          await HtmlConfig.findByIdAndUpdate(doc._id, {
-            $push: { blocksConfiguration: addedBlock._id },
-          });
-        });
-      }
-    }
-  });
+  const configuration = await Configuration.findOne({ _id: configId });
+  const listHtmlConfig = configuration.html;
+  const blocksConfiguration = [];
+  for (let i = 0; i < addBlock.length; i += 1) {
+    const blockConfiguration = {
+      _id: mongoose.Types.ObjectId(),
+      blockSelector: addBlock[i].blockSelector,
+      configuration: {
+        redundancySelectors: addBlock[i].configuration.redundancySelectors,
+        itemSelector: addBlock[i].configuration.itemSelector,
+        titleSelector: addBlock[i].configuration.titleSelector,
+        linkSelector: addBlock[i].configuration.linkSelector,
+      },
+    };
+    blocksConfiguration.push(blockConfiguration);
+  }
+  const newHtmlConfig = {
+    _id: mongoose.Types.ObjectId(),
+    url: html.url,
+    contentRedundancySelectors: html.contentRedundancySelectors,
+    blocksConfiguration,
+  };
+  listHtmlConfig.push(newHtmlConfig);
+  await Configuration.findOneAndUpdate(
+    { _id: configId },
+    {
+      $set: {
+        html: listHtmlConfig,
+        updatedAt: Date.now(),
+      },
+    },
+  );
 };
 
 const deleteHtmlConfig = async ({ configId, htmlConfigId }) => {
-  await Configuration.findByIdAndUpdate(configId, {
-    $pull: { html: htmlConfigId },
-    $set: { updatedAt: Date.now() },
-  });
-  const config = await Configuration.findById(configId);
-  if (config && config.html.length === 0) {
-    await Configuration.findByIdAndUpdate(configId, {
+  const configuration = await Configuration.findOne({ _id: configId });
+  let listHtmlConfig = configuration.html;
+  listHtmlConfig = listHtmlConfig.filter(
+    (html) => html._id.toString() !== htmlConfigId,
+  );
+  await Configuration.findOneAndUpdate(
+    { _id: configId },
+    {
       $set: {
-        status: '02',
+        html: listHtmlConfig,
+        updatedAt: Date.now(),
       },
-    });
-  }
-  const htmlConfigDoc = await HtmlConfig.findById(htmlConfigId);
-  const listBlockId = htmlConfigDoc.blocksConfiguration;
-  listBlockId.forEach(async (blockId) => {
-    await BlockConfig.findByIdAndDelete(blockId);
-  });
-  await HtmlConfig.findByIdAndDelete(htmlConfigId);
+    },
+  );
 };
 
 const updateHtmlConfig = async ({ htmlId, html, configId }) => {
-  await HtmlConfig.findByIdAndUpdate(htmlId, {
-    $set: {
-      url: html.url,
-      contentRedundancySelectors: html.contentRedundancySelectors,
-    },
-  });
+  const configuration = await Configuration.findOne({ _id: configId });
+  const listHtmlConfig = configuration.html;
+  for (let i = 0; i < listHtmlConfig.length; i += 1) {
+    if (listHtmlConfig[i]._id.toString() === htmlId) {
+      listHtmlConfig[i].url = html.url;
+      listHtmlConfig[i].contentRedundancySelectors =
+        html.contentRedundancySelectors;
+    }
+  }
   await Configuration.findByIdAndUpdate(configId, {
-    $set: { updatedAt: Date.now() },
+    $set: {
+      html: listHtmlConfig,
+      updatedAt: Date.now(),
+    },
   });
 };
 

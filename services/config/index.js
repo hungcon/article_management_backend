@@ -1,12 +1,13 @@
 /* eslint-disable func-names */
+const mongoose = require('mongoose');
 const Configuration = require('../../models/configuration');
-const RSSConfig = require('../../models/rssConfig');
+// const RSSConfig = require('../../models/rssConfig');
 const HtmlConfig = require('../../models/htmlConfig');
 const BlockConfig = require('../../models/blockConfig');
 const Website = require('../../models/website');
 const Category = require('../../models/category');
-const { addHtmlConfig, deleteHtmlConfig } = require('./html');
-const { addRssConfig, deleteRssConfig } = require('./rss');
+// const { addHtmlConfig, deleteHtmlConfig } = require('./html');
+// const { addRssConfig, deleteRssConfig } = require('./rss');
 
 const getConfiguration = async () => {
   const configuration = await Configuration.find({})
@@ -17,19 +18,19 @@ const getConfiguration = async () => {
     .populate({
       path: 'category',
       model: Category,
-    })
-    .populate({
-      path: 'rss',
-      model: RSSConfig,
-    })
-    .populate({
-      path: 'html',
-      model: HtmlConfig,
-      populate: {
-        path: 'blocksConfiguration',
-        modal: BlockConfig,
-      },
     });
+  // .populate({
+  //   path: 'rss',
+  //   model: RSSConfig,
+  // })
+  // .populate({
+  //   path: 'html',
+  //   model: HtmlConfig,
+  //   populate: {
+  //     path: 'blocksConfiguration',
+  //     modal: BlockConfig,
+  //   },
+  // });
   return configuration;
 };
 
@@ -71,35 +72,44 @@ const addConfig = async ({ general, config, article }) => {
   newConfig.category = (await Category.findOne({ name: general.category }))._id;
   newConfig.createdAt = Date.now();
   newConfig.updatedAt = Date.now();
+  const blocksConfiguration = [];
   if (general.crawlType === 'HTML') {
-    Configuration.create(newConfig, function (err, doc) {
-      if (err) {
-        console.log(err);
-      }
-      const addBlock = config.blocksConfiguration;
-      const html = {
-        url: config.url,
-        contentRedundancySelectors: config.contentRedundancySelectors,
+    const addBlock = config.blocksConfiguration;
+    for (let i = 0; i < addBlock.length; i += 1) {
+      const blockConfiguration = {
+        _id: mongoose.Types.ObjectId(),
+        blockSelector: addBlock[i].blockSelector,
+        configuration: {
+          redundancySelectors: addBlock[i].configuration.redundancySelectors,
+          itemSelector: addBlock[i].configuration.itemSelector,
+          titleSelector: addBlock[i].configuration.titleSelector,
+          linkSelector: addBlock[i].configuration.linkSelector,
+        },
       };
-      const configId = doc._id;
-      addHtmlConfig({ html, addBlock, configId });
-    });
+      blocksConfiguration.push(blockConfiguration);
+    }
+    const html = {
+      _id: mongoose.Types.ObjectId(),
+      url: config.url,
+      contentRedundancySelectors: config.contentRedundancySelectors,
+      blocksConfiguration,
+    };
+    newConfig.html = html;
+    Configuration.create(newConfig);
   } else {
-    Configuration.create(newConfig, function (err, doc) {
-      if (err) {
-        console.log(err);
-      }
-      const rssConfig = {
-        url: config.url,
+    const rssConfig = {
+      _id: mongoose.Types.ObjectId(),
+      url: config.url,
+      configuration: {
         itemSelector: config.configuration.itemSelector,
         titleSelector: config.configuration.titleSelector,
         linkSelector: config.configuration.linkSelector,
         sapoSelector: config.configuration.sapoSelector,
-        publishDateSelector: config.configuration.publishDateSelector,
-      };
-      const configId = doc._id;
-      addRssConfig({ configId, rssConfig });
-    });
+        publicDateSelector: config.configuration.publicDateSelector,
+      },
+    };
+    newConfig.rss = rssConfig;
+    Configuration.create(newConfig);
   }
 };
 
@@ -120,18 +130,7 @@ const updateConfig = async ({ configId, config }) => {
 };
 
 const deleteConfig = async (configId) => {
-  const config = await Configuration.findById(configId);
-  if (config.crawlType === 'HTML') {
-    config.html.forEach(async (htmlConfigId) => {
-      await deleteHtmlConfig({ configId, htmlConfigId });
-    });
-    await Configuration.findByIdAndDelete(configId);
-  } else {
-    config.rss.forEach(async (rssConfigId) => {
-      await deleteRssConfig({ configId, rssConfigId });
-    });
-    await Configuration.findByIdAndDelete(configId);
-  }
+  await Configuration.findByIdAndDelete(configId);
 };
 
 module.exports = {

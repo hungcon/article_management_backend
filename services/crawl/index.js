@@ -199,18 +199,18 @@ const articleWorker = async (articleInfoAndConfiguration) => {
     if (isValidArticle(article)) {
       const newArticle = await insertArticle(article);
       console.log('Inserted article: ', newArticle.title);
-      // const articleId = newArticle._id;
-      // await cleanArticle(articleId);
-      // if (autoSynthetic === '01') {
-      //   setTimeout(async function () {
-      //     await syntheticArticle(articleId);
-      //   }, 3 * 60 * 1000);
-      // } else {
-      //   setTimeout(async function () {
-      //     await updateStatus(articleId);
-      //     console.log('Chuyển trạng thái bài báo thành đang chuẩn hoá tay');
-      //   }, 3 * 60 * 1000);
-      // }
+      const articleId = newArticle._id;
+      await cleanArticle(articleId);
+      if (autoSynthetic === '01') {
+        setTimeout(async function () {
+          await syntheticArticle(articleId);
+        }, 3 * 60 * 1000);
+      } else {
+        setTimeout(async function () {
+          await updateStatus(articleId);
+          console.log('Chuyển trạng thái bài báo thành đang chuẩn hoá tay');
+        }, 3 * 60 * 1000);
+      }
     } else {
       await invalidArticleWorker(
         link,

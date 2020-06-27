@@ -15,16 +15,22 @@ const ConfigurationSchema = new mongoose.Schema({
     type: 'Date',
     default: Date.now(),
   },
+  // rss: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: 'RssConfig',
+  //   },
+  // ],
   rss: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'RssConfig',
+      type: Object,
     },
   ],
   html: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'HtmlConfig',
+      // type: Schema.Types.ObjectId,
+      // ref: 'HtmlConfig',
+      type: Object,
     },
   ],
   updatedAt: Date,

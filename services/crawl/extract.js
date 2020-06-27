@@ -14,7 +14,7 @@ const extractRss = async (url, configuration) => {
       titleSelector,
       linkSelector,
       sapoSelector,
-      publishDateSelector,
+      publicDateSelector,
     } = configuration;
 
     const { data } = await axios.get(url, {
@@ -26,12 +26,12 @@ const extractRss = async (url, configuration) => {
       const title = $(this).children(titleSelector).text().trim();
       const link = $(this).children(linkSelector).text().trim();
       const sapo = $(this).children(sapoSelector).text();
-      const publishDate = $(this).children(publishDateSelector).text().trim();
+      const publicDate = $(this).children(publicDateSelector).text().trim();
       articles.push({
         title,
         link: getLink(origin, link),
         sapo,
-        publishDate,
+        publicDate,
       });
     });
     return { articles };

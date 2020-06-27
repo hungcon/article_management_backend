@@ -1,43 +1,63 @@
-const HtmlConfig = require('../../../../models/htmlConfig');
-const BlockConfig = require('../../../../models/blockConfig');
+const mongoose = require('mongoose');
 const Configuration = require('../../../../models/configuration');
 
 const addBlockConfig = async ({ html, block, htmlId, configId }) => {
-  // eslint-disable-next-line func-names
-  await BlockConfig.create(block, async function (err, doc) {
-    if (err) {
-      console.log(err);
+  const configuration = await Configuration.findOne({ _id: configId });
+  const listHtmlConfig = configuration.html;
+  block._id = mongoose.Types.ObjectId();
+  for (let i = 0; i < listHtmlConfig.length; i += 1) {
+    if (listHtmlConfig[i]._id.toString() === htmlId) {
+      listHtmlConfig[i].url = html.url;
+      listHtmlConfig[i].contentRedundancySelectors =
+        html.contentRedundancySelectors;
+      listHtmlConfig[i].blocksConfiguration.push(block);
     }
-    await HtmlConfig.findByIdAndUpdate(htmlId, {
-      $set: {
-        url: html.url,
-        contentRedundancySelectors: html.contentRedundancySelectors,
-      },
-      $push: {
-        // eslint-disable-next-line no-undef
-        blocksConfiguration: doc._id,
-      },
-    });
-  });
+  }
   await Configuration.findByIdAndUpdate(configId, {
-    $set: { updatedAt: Date.now() },
+    $set: {
+      html: listHtmlConfig,
+      updatedAt: Date.now(),
+    },
   });
 };
 
 const updateBlockConfig = async ({ blockConfigId, block, configId }) => {
-  await BlockConfig.findByIdAndUpdate(blockConfigId, block);
+  const configuration = await Configuration.findOne({ _id: configId });
+  const listHtmlConfig = configuration.html;
+  for (let i = 0; i < listHtmlConfig.length; i += 1) {
+    const { blocksConfiguration } = listHtmlConfig[i];
+    for (let j = 0; j < blocksConfiguration.length; j += 1) {
+      if (blocksConfiguration[j]._id.toString() === blockConfigId) {
+        blocksConfiguration[j].blockSelector = block.blockSelector;
+        blocksConfiguration[j].configuration = block.configuration;
+      }
+    }
+  }
   await Configuration.findByIdAndUpdate(configId, {
-    $set: { updatedAt: Date.now() },
+    $set: {
+      html: listHtmlConfig,
+      updatedAt: Date.now(),
+    },
   });
 };
 
 const deleteBlockConfig = async ({ htmlConfigId, blockConfigId, configId }) => {
-  await HtmlConfig.findByIdAndUpdate(htmlConfigId, {
-    $pull: { blocksConfiguration: blockConfigId },
-  });
-  await BlockConfig.findByIdAndDelete(blockConfigId);
+  const configuration = await Configuration.findOne({ _id: configId });
+  const listHtmlConfig = configuration.html;
+  for (let i = 0; i < listHtmlConfig.length; i += 1) {
+    if (listHtmlConfig[i]._id.toString() === htmlConfigId) {
+      listHtmlConfig[i].blocksConfiguration = listHtmlConfig[
+        i
+      ].blocksConfiguration.filter(
+        (block) => block._id.toString() !== blockConfigId,
+      );
+    }
+  }
   await Configuration.findByIdAndUpdate(configId, {
-    $set: { updatedAt: Date.now() },
+    $set: {
+      html: listHtmlConfig,
+      updatedAt: Date.now(),
+    },
   });
 };
 
