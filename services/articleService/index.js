@@ -1,10 +1,12 @@
+/* eslint-disable no-shadow */
 /* eslint-disable func-names */
 /* eslint-disable prefer-const */
 const cheerio = require('cheerio');
+const entities = new (require('html-entities').AllHtmlEntities)();
 const Sentence = require('../../models/sentence');
 const Paragraph = require('../../models/paragraph');
-// const Article = require('../../models/article');
 const Audio = require('../../models/audio');
+const Article = require('../../models/article');
 
 const storeAllophones = async (
   allophones,
@@ -21,55 +23,82 @@ const storeAllophones = async (
     { _id: paragraphId },
     {
       $push: {
-        sentences: sentence._id,
+        // sentences: sentence._id,
+        sentences: sentence,
       },
     },
   );
   return { status: 1 };
 };
 
-const replaceAllophones = async (message, sentenceId, orig, type, index) => {
+const replaceAllophones = async (
+  message,
+  sentenceId,
+  orig,
+  type,
+  index,
+  articleId,
+) => {
+  orig = unescape(orig);
+  if (orig.includes('&')) {
+    orig = orig.replace('&', entities.encode('&'));
+  }
   const $replace = cheerio.load(message, {
     xmlMode: true,
     decodeEntities: false,
   });
   $replace('boundary').remove();
   const replaceTag = $replace('phrase').html();
-  const sentence = await Sentence.findOne({ _id: sentenceId });
-  const { allophones } = sentence;
-  const $ = cheerio.load(allophones, {
-    xmlMode: true,
-    decodeEntities: false,
-  });
-  const listIndex = [];
-  $('s')
-    .find('mtu')
-    .each(function (i) {
-      if (
-        // $(this).get(0).attribs.nsw === type &&
-        $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase()
-      ) {
-        listIndex.push(i);
+  const article = await Article.findOne({ _id: articleId });
+  const { paragraphs } = article;
+  for (const paragraph of paragraphs) {
+    const { sentences } = paragraph;
+    for (const sentence of sentences) {
+      if (sentence._id.toString() === sentenceId) {
+        const { allophones } = sentence;
+        const $ = cheerio.load(allophones, {
+          xmlMode: true,
+          decodeEntities: false,
+        });
+        const listIndex = [];
+        $('s')
+          .find('mtu')
+          .each(function (i) {
+            if (
+              // $(this).get(0).attribs.nsw === type &&
+              $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase()
+            ) {
+              listIndex.push(i);
+            }
+          });
+        const indexToReplace = listIndex[index];
+        $('s')
+          .find('mtu')
+          .each(function (j) {
+            if (
+              // $(this).get(0).attribs.nsw === type &&
+              $(this).get(0).attribs.orig.toLowerCase() ===
+                orig.toLowerCase() &&
+              j === indexToReplace
+            ) {
+              $(this).children().remove();
+              $(this).append(replaceTag.trim());
+              $(this).attr('nsw', type);
+            }
+          });
+        sentence.allophones = $.html();
       }
-    });
-  const indexToReplace = listIndex[index];
-  $('s')
-    .find('mtu')
-    .each(function (j) {
-      if (
-        // $(this).get(0).attribs.nsw === type &&
-        $(this).get(0).attribs.orig.toLowerCase() === orig.toLowerCase() &&
-        j === indexToReplace
-      ) {
-        $(this).children().remove();
-        $(this).append(replaceTag.trim());
-        $(this).attr('nsw', type);
-      }
-    });
-  await Sentence.findOneAndUpdate(
-    { _id: sentenceId },
-    { allophones: $.html() },
+    }
+  }
+  await Article.findOneAndUpdate(
+    { _id: articleId },
+    {
+      $set: {
+        paragraphs,
+      },
+    },
   );
+
   return { status: 1 };
 };
 
@@ -91,8 +120,45 @@ const saveAudioUrl = async (
   return { status: 1 };
 };
 
+const replaceBoundary = async (
+  articleId,
+  paragraphId,
+  paragraphLength,
+  time,
+) => {
+  const article = await Article.findOne({ _id: articleId });
+  const { paragraphs } = article;
+  for (const paragraph of paragraphs) {
+    const { sentences } = paragraph;
+    for (const sentence of sentences) {
+      if (
+        sentence.sentenceId === paragraphLength - 1 &&
+        paragraph._id.toString() === paragraphId
+      ) {
+        const { allophones } = sentence;
+        const $ = cheerio.load(allophones, {
+          xmlMode: true,
+          decodeEntities: false,
+        });
+        $('boundary').attr('duration', time * 1000);
+        sentence.allophones = $.html();
+      }
+    }
+  }
+  await Article.findOneAndUpdate(
+    { _id: articleId },
+    {
+      $set: {
+        paragraphs,
+      },
+    },
+  );
+  return { status: 1 };
+};
+
 module.exports = {
   storeAllophones,
   replaceAllophones,
   saveAudioUrl,
+  replaceBoundary,
 };

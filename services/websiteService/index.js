@@ -19,8 +19,19 @@ const isWebsiteExisted = async (name) => {
   return website;
 };
 
-const updateWebsite = async (name, websiteId) => {
-  await Website.findOneAndUpdate({ _id: websiteId }, { $set: { name } });
+const updateWebsite = async (websiteInfo, websiteId) => {
+  await Website.findOneAndUpdate(
+    { _id: websiteId },
+    {
+      $set: {
+        appId: websiteInfo.appId,
+        bitRate: websiteInfo.bitRate,
+        titleTime: websiteInfo.titleTime,
+        sapoTime: websiteInfo.sapoTime,
+        paragraphTime: websiteInfo.paragraphTime,
+      },
+    },
+  );
 };
 
 const deleteWebsite = async (websiteId) => {

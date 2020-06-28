@@ -31,8 +31,8 @@ router.post(
 );
 
 router.post(
-  '/clean-article',
-  asyncMiddleware(validArticleController.cleanArticle),
+  '/normalize-article',
+  asyncMiddleware(validArticleController.normalizeArticle),
 );
 
 router.post(
@@ -48,6 +48,11 @@ router.post(
 router.post(
   '/finish-normalize',
   asyncMiddleware(validArticleController.finishNormalize),
+);
+
+router.post(
+  '/update-boundary',
+  asyncMiddleware(validArticleController.updateBoundary),
 );
 
 module.exports = router;

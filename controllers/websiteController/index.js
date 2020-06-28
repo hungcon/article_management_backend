@@ -24,8 +24,8 @@ const addWebsite = async (req, res) => {
 };
 
 const updateWebsite = async (req, res) => {
-  const { name, websiteId } = req.body;
-  await websiteService.updateWebsite(name, websiteId);
+  const { websiteInfo, websiteId } = req.body;
+  await websiteService.updateWebsite(websiteInfo, websiteId);
   return res.send({ status: 1 });
 };
 

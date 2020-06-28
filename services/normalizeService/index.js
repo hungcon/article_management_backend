@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 const axios = require('axios');
+// const article = require('../crawlService/article');
 require('dotenv').config();
 
 const splitSentences = async (text) => {
@@ -86,9 +87,17 @@ const getAudioSentenceLink = async (
   }
 };
 
-const getNormalizeWord = async (id, expansion, index, word, type) => {
+const getNormalizeWord = async (
+  id,
+  expansion,
+  index,
+  word,
+  type,
+  articleId,
+) => {
+  word = escape(word);
   console.log(
-    `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+    `${CALLBACK_URL}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
   );
   try {
     const { data } = await axios({
@@ -106,7 +115,7 @@ const getNormalizeWord = async (id, expansion, index, word, type) => {
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones-of-words?sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+        call_back: `${CALLBACK_URL}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
       },
     });
     return data;

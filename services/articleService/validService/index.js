@@ -16,8 +16,11 @@ const {
   getAudioSentenceLink,
   getNormalizeWord,
 } = require('../../normalizeService');
+const { replaceBoundary } = require('../index');
 
 const { concatByLink } = require('../../audioService/join_audio');
+
+const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const getValidArticles = async (website, category, date, status) => {
   let articles;
@@ -52,20 +55,17 @@ const getValidArticles = async (website, category, date, status) => {
 };
 
 const getValidArticleById = async (articleId) => {
-  const article = await Article.findOne({ _id: articleId }).populate({
-    path: 'paragraphs',
-    model: Paragraph,
-    options: {
-      sort: { paragraphId: 1 },
-    },
-    populate: {
-      path: 'sentences',
-      modal: Sentence,
-      options: {
-        sort: { sentenceId: 1 },
-      },
-    },
+  const article = await Article.findOne({ _id: articleId }).sort({
+    paragraphId: 1,
   });
+  const { paragraphs } = article;
+  for (const paragraph of paragraphs) {
+    const { sentences } = paragraph;
+    sentences.sort(function (a, b) {
+      return a.sentenceId - b.sentenceId;
+    });
+  }
+  article.paragraphs = paragraphs;
   return article;
 };
 
@@ -139,7 +139,7 @@ const isExistedInArticle = async (link, title) => {
   return !!article;
 };
 
-const cleanArticle = async (articleId) => {
+const normalizeArticle = async (articleId) => {
   const article = await Article.findOne({ _id: articleId });
   const { title, text } = article;
   const listParagraph = [title, ...text.split('\n\n')];
@@ -160,20 +160,42 @@ const cleanArticle = async (articleId) => {
         paragraphId,
         listSentences.length,
       );
-    }, 30 * 1000);
+    }, 60 * 1000);
   }
-  const res = await Promise.all(arrPromise);
-  console.log('data', res);
+  await Promise.all(arrPromise);
   setTimeout(async function () {
     const article = await Article.findOne({ _id: articleId });
     if (article.paragraphs.length === listParagraph.length) {
+      await updateBoundary(articleId);
       await Article.findOneAndUpdate({ _id: articleId }, { status: 3 });
       console.log('Chuyển trạng thái bài báo thành đã chuẩn hoá máy');
     } else {
-      await Article.findOneAndUpdate({ _id: articleId }, { status: 2 });
+      await Article.findOneAndUpdate(
+        { _id: articleId },
+        { status: 2, paragraphs: [] },
+      );
       console.log('Chuyển trạng thái bài báo thành chuẩn hoá máy lỗi');
     }
-  }, 45 * 1000);
+  }, 90 * 1000);
+  return { status: 1 };
+};
+
+const updateBoundary = async (articleId) => {
+  const article = await Article.findOne({ _id: articleId });
+  const { website, paragraphs } = article;
+  const websiteInfo = await Website.findOne({ _id: website });
+  const { titleTime, paragraphTime } = websiteInfo;
+  for (let i = 0; i < paragraphs.length; i += 1) {
+    const { sentences } = paragraphs[i];
+    const paragraphId = paragraphs[i]._id.toString();
+    await replaceBoundary(
+      articleId,
+      paragraphId,
+      sentences.length,
+      i === 0 ? titleTime : paragraphTime,
+    );
+    await breakTime(200);
+  }
   return { status: 1 };
 };
 
@@ -191,10 +213,7 @@ const checkCallbackAllophones = async (
       },
     });
     await Paragraph.findOneAndDelete({ _id: paragraphId });
-    await Article.findOneAndUpdate(
-      { _id: articleId },
-      { status: 2, paragraphs: [] },
-    );
+    console.log('xoa');
     console.log('Đoạn văn chuẩn hoá lỗi');
     return { status: 0 };
   }
@@ -202,26 +221,23 @@ const checkCallbackAllophones = async (
     { _id: articleId },
     {
       $push: {
-        paragraphs: paragraphId,
+        paragraphs: paragraph,
       },
     },
   );
   console.log('Đoạn văn chuẩn hoá thành công');
+  await Sentence.deleteMany({
+    _id: {
+      $in: paragraph.sentences,
+    },
+  });
+  await Paragraph.findOneAndDelete({ _id: paragraphId });
+  console.log('xoa');
   return { status: 1 };
 };
 
 const syntheticArticle = async (articleId, voiceSelect) => {
-  const article = await Article.findOne({ _id: articleId }).populate({
-    path: 'paragraphs',
-    model: Paragraph,
-    populate: {
-      path: 'sentences',
-      modal: Sentence,
-      options: {
-        sort: { sentenceId: -1 },
-      },
-    },
-  });
+  const article = await Article.findOne({ _id: articleId });
   if (article.status === 2) {
     return { status: 0 };
   }
@@ -255,10 +271,9 @@ const syntheticArticle = async (articleId, voiceSelect) => {
       if (status === 0) {
         syntheticSuccess = 0;
       }
-    }, 1 * 60 * 1000);
+    }, 45 * 1000);
   }
-  const res = await Promise.all(arrPromise);
-  console.log('data', res);
+  await Promise.all(arrPromise);
   setTimeout(async function () {
     if (syntheticSuccess === 1) {
       const listAudioUrls = await Audio.find({ articleId });
@@ -283,7 +298,7 @@ const syntheticArticle = async (articleId, voiceSelect) => {
       console.log('Chuyển trạng thái bài báo sang chuyển audio lỗi');
       await Audio.deleteMany({ articleId });
     }
-  }, 90 * 1000);
+  }, 60 * 1000);
   return { status: 1 };
 };
 
@@ -306,7 +321,8 @@ const checkCallbackAudio = async (
 const normalizeWord = async (listExpansionChange, articleId) => {
   for (const expansionChange of listExpansionChange) {
     const { id, expansion, index, word, wordType } = expansionChange;
-    await getNormalizeWord(id, expansion, index, word, wordType);
+    await getNormalizeWord(id, expansion, index, word, wordType, articleId);
+    await breakTime(1000);
   }
   await Article.findOneAndUpdate({ _id: articleId }, { $set: { status: 4 } });
   console.log('Chuyển trạng thái bài báo sang đang chuẩn hoá tay');
@@ -315,7 +331,7 @@ const normalizeWord = async (listExpansionChange, articleId) => {
 
 const finishNormalize = async (articleId) => {
   await Article.findOneAndUpdate({ _id: articleId }, { $set: { status: 5 } });
-  console.log('Chuyển trạng thái bài báo sang đã chuẩn hoá tay');
+  console.log('Chuyển trạng thái bài báo sang đang chờ phê duyệt');
   return { status: 1 };
 };
 
@@ -333,5 +349,6 @@ module.exports = {
   normalizeWord,
   syntheticArticle,
   finishNormalize,
-  cleanArticle,
+  normalizeArticle,
+  updateBoundary,
 };

@@ -42,9 +42,9 @@ const getValidArticleById = async (req, res) => {
   return res.send(article);
 };
 
-const cleanArticle = async (req, res) => {
+const normalizeArticle = async (req, res) => {
   const { articleId } = req.body;
-  const { status } = await validArticleService.cleanArticle(articleId);
+  const { status } = await validArticleService.normalizeArticle(articleId);
   return res.send({ status });
 };
 
@@ -72,14 +72,21 @@ const finishNormalize = async (req, res) => {
   return res.send({ status });
 };
 
+const updateBoundary = async (req, res) => {
+  const { articleId } = req.body;
+  const { status } = await validArticleService.updateBoundary(articleId);
+  return res.send({ status });
+};
+
 module.exports = {
   getValidArticles,
   updateValidArticle,
   deleteValidArticle,
   getValidArticleById,
   addValidArticle,
-  cleanArticle,
+  normalizeArticle,
   syntheticArticle,
   normalizeWord,
   finishNormalize,
+  updateBoundary,
 };

@@ -6,8 +6,9 @@ const ParagraphSchema = new mongoose.Schema({
   paragraphId: Number,
   sentences: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'Sentence',
+      // type: Schema.Types.ObjectId,
+      // ref: 'Sentence',
+      type: Object,
     },
   ],
 });

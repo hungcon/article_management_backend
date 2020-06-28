@@ -5,7 +5,7 @@ const configService = require('../configService');
 const { getPublicDate } = require('../../utils/date');
 const { extractLinks, extractArticle } = require('./extract');
 const {
-  cleanArticle,
+  normalizeArticle,
   syntheticArticle,
 } = require('../articleService/validService');
 const {
@@ -116,8 +116,8 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  // const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
-  const CHECK_QUEUE_LINKS_TIME = 30 * 1000;
+  const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
+  // const CHECK_QUEUE_LINKS_TIME = 30 * 1000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
       worker();
@@ -128,8 +128,8 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  // const BREAK_TIME = 10 * 60 * 1000;
-  const BREAK_TIME = 30 * 1000;
+  const BREAK_TIME = 10 * 60 * 1000;
+  // const BREAK_TIME = 30 * 1000;
   try {
     RUNNING_WORKER_FLAG = true;
     while (QUEUE_LINKS.length) {
@@ -196,14 +196,20 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       articleConfiguration,
     );
     if (error) {
-      await invalidArticleWorker(link, title, category, website, 'Crawl error');
+      await invalidArticleWorker(
+        link,
+        title,
+        category,
+        website,
+        'Thu thập lỗi',
+      );
       throw error;
     }
     if (isValidArticle(article)) {
       const newArticle = await insertArticle(article);
       console.log('Inserted article: ', newArticle.title);
       const articleId = newArticle._id;
-      await cleanArticle(articleId);
+      await normalizeArticle(articleId);
       if (autoSynthetic === '01') {
         setTimeout(async function () {
           await syntheticArticle(articleId);
@@ -220,7 +226,7 @@ const articleWorker = async (articleInfoAndConfiguration) => {
         title,
         category,
         website,
-        'Number of words less than 100.',
+        'Số từ nhỏ hơn 100',
       );
     }
     return { status: 1 };
@@ -286,7 +292,7 @@ const stopSchedule = async () => {
 };
 
 const cleanText = async (articleId) => {
-  const cleanedArticle = await cleanArticle(articleId);
+  const cleanedArticle = await normalizeArticle(articleId);
   return { cleanedArticle };
 };
 

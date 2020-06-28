@@ -26,8 +26,9 @@ const ArticleSchema = new mongoose.Schema({
   numberOfWords: Number,
   paragraphs: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'Paragraph',
+      // type: Schema.Types.ObjectId,
+      // ref: 'Paragraph',
+      type: Object,
     },
   ],
   linkAudio: {
@@ -41,7 +42,7 @@ const ArticleSchema = new mongoose.Schema({
       2, // Chuẩn hoá máy lỗi
       3, // Đã chuẩn hoá máy
       4, // Đang chuẩn hoá tay
-      5, // Đã chuẩn hoá tay
+      5, // Đang chờ phê duyệt
       6, // Đang chuyển audio
       7, // Chuyển audio lỗi
       8, // Đã chuyển audio
