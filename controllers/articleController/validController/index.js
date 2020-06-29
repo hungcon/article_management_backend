@@ -36,6 +36,16 @@ const getValidArticles = async (req, res) => {
   return res.send(articles);
 };
 
+const getPendingArticles = async (req, res) => {
+  const { website, category, date } = req.body;
+  const articles = await validArticleService.getPendingArticles(
+    website,
+    category,
+    date,
+  );
+  return res.send(articles);
+};
+
 const getValidArticleById = async (req, res) => {
   const { articleId } = req.body;
   const article = await validArticleService.getValidArticleById(articleId);
@@ -72,6 +82,12 @@ const finishNormalize = async (req, res) => {
   return res.send({ status });
 };
 
+const denyArticle = async (req, res) => {
+  const { articleId } = req.body;
+  const { status } = await validArticleService.denyArticle(articleId);
+  return res.send({ status });
+};
+
 const updateBoundary = async (req, res) => {
   const { articleId } = req.body;
   const { status } = await validArticleService.updateBoundary(articleId);
@@ -80,12 +96,14 @@ const updateBoundary = async (req, res) => {
 
 module.exports = {
   getValidArticles,
+  getPendingArticles,
   updateValidArticle,
   deleteValidArticle,
   getValidArticleById,
   addValidArticle,
   normalizeArticle,
   syntheticArticle,
+  denyArticle,
   normalizeWord,
   finishNormalize,
   updateBoundary,

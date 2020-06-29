@@ -206,12 +206,15 @@ const articleWorker = async (articleInfoAndConfiguration) => {
       throw error;
     }
     if (isValidArticle(article)) {
+      // Thêm bài báo
       const newArticle = await insertArticle(article);
       console.log('Inserted article: ', newArticle.title);
       const articleId = newArticle._id;
+      // Chuẩn hoá máy
       await normalizeArticle(articleId);
       if (autoSynthetic === '01') {
         setTimeout(async function () {
+          // Tổng hợp
           await syntheticArticle(articleId);
         }, 3 * 60 * 1000);
       } else {
@@ -291,15 +294,9 @@ const stopSchedule = async () => {
   return { status: 1 };
 };
 
-const cleanText = async (articleId) => {
-  const cleanedArticle = await normalizeArticle(articleId);
-  return { cleanedArticle };
-};
-
 module.exports = {
   reRunSchedule,
   stopSchedule,
   runSchedule,
   saveArticle,
-  cleanText,
 };

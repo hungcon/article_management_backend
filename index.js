@@ -69,4 +69,4 @@ server.listen(PORT, () => {
 
 require('./services/initService').generateAccount();
 
-// require('./services/crawlService').runSchedule();
+require('./services/crawlService').runSchedule();

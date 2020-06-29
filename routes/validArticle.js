@@ -25,6 +25,12 @@ router.post(
   '/get-valid-articles',
   asyncMiddleware(validArticleController.getValidArticles),
 );
+
+router.post(
+  '/get-pending-articles',
+  asyncMiddleware(validArticleController.getPendingArticles),
+);
+
 router.post(
   '/get-valid-article-by-id',
   asyncMiddleware(validArticleController.getValidArticleById),
@@ -38,6 +44,12 @@ router.post(
 router.post(
   '/synthetic-article',
   asyncMiddleware(validArticleController.syntheticArticle),
+);
+
+
+router.post(
+  '/deny-article',
+  asyncMiddleware(validArticleController.denyArticle),
 );
 
 router.post(

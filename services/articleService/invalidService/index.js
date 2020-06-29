@@ -4,7 +4,7 @@ const InvalidArticle = require('../../../models/invalidArticle');
 const Website = require('../../../models/website');
 const Category = require('../../../models/category');
 
-const getInValidArticles = async (website, category, date, status) => {
+const getInValidArticles = async (website, category, date, reason) => {
   let articles;
   const condition = {};
   if (website) {
@@ -19,8 +19,8 @@ const getInValidArticles = async (website, category, date, status) => {
       $lte: new Date(date.endDate).toISOString(),
     };
   }
-  if (status) {
-    condition.status = status;
+  if (reason) {
+    condition.reason = reason;
   }
   console.log(condition);
   articles = await InvalidArticle.find(condition)

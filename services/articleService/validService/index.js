@@ -54,6 +54,37 @@ const getValidArticles = async (website, category, date, status) => {
   return articles;
 };
 
+const getPendingArticles = async (website, category, date) => {
+  let articles;
+
+  const condition = {
+    status: 5,
+  };
+  if (website) {
+    condition.website = website;
+  }
+  if (category) {
+    condition.category = category;
+  }
+  if (date.startDate) {
+    condition.createdAt = {
+      $gte: new Date(date.startDate).toISOString(),
+      $lte: new Date(date.endDate).toISOString(),
+    };
+  }
+  console.log(condition);
+  articles = await Article.find(condition)
+    .populate({
+      path: 'website',
+      model: Website,
+    })
+    .populate({
+      path: 'category',
+      model: Category,
+    });
+  return articles;
+};
+
 const getValidArticleById = async (articleId) => {
   const article = await Article.findOne({ _id: articleId }).sort({
     paragraphId: 1,
@@ -141,6 +172,8 @@ const isExistedInArticle = async (link, title) => {
 
 const normalizeArticle = async (articleId) => {
   const article = await Article.findOne({ _id: articleId });
+  const { website } = article;
+  const websiteInfo = await Website.findOne({ _id: website });
   const { title, text } = article;
   const listParagraph = [title, ...text.split('\n\n')];
   let arrPromise = [];
@@ -151,7 +184,13 @@ const normalizeArticle = async (articleId) => {
     const listSentences = JSON.parse(message);
     for (let j = 0; j < listSentences.length; j += 1) {
       arrPromise.push(
-        getAllophones(listSentences[j], articleId, paragraphId, j),
+        getAllophones(
+          listSentences[j],
+          paragraphId,
+          j,
+          websiteInfo.appId,
+          websiteInfo.bitRate,
+        ),
       );
     }
     setTimeout(async function () {
@@ -241,6 +280,8 @@ const syntheticArticle = async (articleId, voiceSelect) => {
   if (article.status === 2) {
     return { status: 0 };
   }
+  const { website } = article;
+  const websiteInfo = await Website.findOne({ _id: website });
   await Article.findOneAndUpdate({ _id: articleId }, { status: 6 });
   const listParagraphs = article.paragraphs;
   let arrPromise = [];
@@ -259,6 +300,8 @@ const syntheticArticle = async (articleId, voiceSelect) => {
           articleId,
           listSentences[j].sentenceId,
           voiceSelect,
+          websiteInfo.bitRate,
+          websiteInfo.appId,
         ),
       );
     }
@@ -319,9 +362,21 @@ const checkCallbackAudio = async (
 };
 
 const normalizeWord = async (listExpansionChange, articleId) => {
+  const article = await Article.findOne({ _id: articleId });
+  const { website } = article;
+  const websiteInfo = await Website.findOne({ _id: website });
   for (const expansionChange of listExpansionChange) {
     const { id, expansion, index, word, wordType } = expansionChange;
-    await getNormalizeWord(id, expansion, index, word, wordType, articleId);
+    await getNormalizeWord(
+      id,
+      expansion,
+      index,
+      word,
+      wordType,
+      articleId,
+      websiteInfo.bitRate,
+      websiteInfo.appId,
+    );
     await breakTime(1000);
   }
   await Article.findOneAndUpdate({ _id: articleId }, { $set: { status: 4 } });
@@ -335,8 +390,15 @@ const finishNormalize = async (articleId) => {
   return { status: 1 };
 };
 
+const denyArticle = async (articleId) => {
+  await Article.findOneAndUpdate({ _id: articleId }, { $set: { status: 4 } });
+  console.log('Chuyển trạng thái bài báo sang đang chuẩn hoá tay');
+  return { status: 1 };
+};
 module.exports = {
   getValidArticles,
+  getPendingArticles,
+  denyArticle,
   updateValidArticle,
   isCategoryAdded,
   updateStatus,

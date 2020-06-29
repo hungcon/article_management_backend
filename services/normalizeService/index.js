@@ -22,7 +22,7 @@ const splitSentences = async (text) => {
   }
 };
 
-const getAllophones = async (text, articleId, paragraphId, sentenceId) => {
+const getAllophones = async (text, paragraphId, sentenceId, appId, bitRate) => {
   try {
     console.log(
       `${CALLBACK_URL}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
@@ -37,9 +37,9 @@ const getAllophones = async (text, articleId, paragraphId, sentenceId) => {
         input_text: text,
         rate: 1,
         voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
-        bit_rate: '128000',
+        bit_rate: bitRate,
         user_id: '46030',
-        app_id: '5b8776d92942cc5b459928b5',
+        app_id: appId,
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
@@ -59,6 +59,8 @@ const getAudioSentenceLink = async (
   articleId,
   sentenceId,
   voice,
+  bitRate,
+  appId,
 ) => {
   try {
     console.log(
@@ -72,9 +74,9 @@ const getAudioSentenceLink = async (
         input_text: allophones,
         rate: 1,
         voice,
-        bit_rate: '128000',
+        bit_rate: bitRate,
         user_id: '46030',
-        app_id: '5b8776d92942cc5b459928b5',
+        app_id: appId,
         input_type: 'ALLOPHONES',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'AUDIO',
@@ -94,6 +96,8 @@ const getNormalizeWord = async (
   word,
   type,
   articleId,
+  bitRate,
+  appId,
 ) => {
   word = escape(word);
   console.log(
@@ -109,9 +113,9 @@ const getNormalizeWord = async (
         input_text: expansion,
         rate: 1,
         voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
-        bit_rate: '128000',
+        bit_rate: bitRate,
         user_id: '46030',
-        app_id: '5b8776d92942cc5b459928b5',
+        app_id: appId,
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
