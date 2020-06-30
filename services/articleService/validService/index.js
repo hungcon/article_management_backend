@@ -329,6 +329,11 @@ const syntheticArticle = async (articleId, voiceSelect) => {
         links.push(audioLink.link);
       }
       const filePath = await concatByLink({ links, articleId });
+      if (filePath === '') {
+        await Article.findOneAndUpdate({ _id: articleId }, { status: 7 });
+        console.log('Chuyển trạng thái bài báo sang chuyển audio lỗi');
+        await Audio.deleteMany({ articleId });
+      }
       await Article.findOneAndUpdate({ _id: articleId }, { status: 8 });
       console.log('Chuyển trạng thái bài báo sang đã chuyển audio');
       await Article.findOneAndUpdate(

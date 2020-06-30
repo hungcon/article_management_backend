@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-globals */
 const cheerio = require('cheerio');
 const axios = require('axios');
-const { extractHtml } = require('../crawl/extract');
+const { extractHtml } = require('../crawlService/extract');
 
 const getMaxPageNumber = async (url) => {
   const { data } = await axios.get(url, {
@@ -62,7 +62,7 @@ const worker = async (url) => {
       }
       listArticles = [...listArticles, ...articles];
     }
-    console.log(listArticles);
+    console.log(listArticles.length);
   });
 };
 

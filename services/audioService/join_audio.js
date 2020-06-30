@@ -69,21 +69,25 @@ function concatWav(wavs_input) {
 }
 
 async function concatByLink({ links, articleId }) {
-  const list_byte_array = await Promise.all(
-    links.map((link) => get_byte(link)),
-  );
-  const bytes = concatWav(list_byte_array);
-  const formData = new FormData();
-  formData.append('file', bytes, { filename: `${articleId}.wav` });
-  const options = {
-    method: 'POST',
-    url: `${process.env.UPLOAD_SERVICE_DOMAIN}/api/v1/uploads/file?fileName=${articleId}.wav`,
-    headers: formData.getHeaders(),
-    data: formData,
-  };
-  const { data } = await axios(options);
-  const filePath = data.result.link.replace(/\\/g, '/');
-  return filePath;
+  try {
+    const list_byte_array = await Promise.all(
+      links.map((link) => get_byte(link)),
+    );
+    const bytes = concatWav(list_byte_array);
+    const formData = new FormData();
+    formData.append('file', bytes, { filename: `${articleId}.wav` });
+    const options = {
+      method: 'POST',
+      url: `${process.env.UPLOAD_SERVICE_DOMAIN}/api/v1/uploads/file?fileName=${articleId}.wav`,
+      headers: formData.getHeaders(),
+      data: formData,
+    };
+    const { data } = await axios(options);
+    const filePath = data.result.link.replace(/\\/g, '/');
+    return filePath;
+  } catch (error) {
+    return '';
+  }
 }
 
 module.exports = {

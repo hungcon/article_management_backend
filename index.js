@@ -70,3 +70,27 @@ server.listen(PORT, () => {
 require('./services/initService').generateAccount();
 
 require('./services/crawlService').runSchedule();
+
+// const listHustLink = [
+//   'https://www.hust.edu.vn/tin-tuc-thong-bao',
+//   'https://www.hust.edu.vn/hoatdongchung',
+//   'https://www.hust.edu.vn/cong-tac-doan-the',
+//   'https://www.hust.edu.vn/dao-tao2',
+//   'https://www.hust.edu.vn/khoa-hoc-cong-nghe1',
+//   'https://www.hust.edu.vn/hop-tac-doi-ngoai-truyen-thong',
+//   'https://www.hust.edu.vn/to-chuc-nhan-su',
+//   'https://www.hust.edu.vn/thong-bao-moi',
+//   'https://www.hust.edu.vn/su-kien-sap-dien-ra',
+//   'https://www.hust.edu.vn/thong-bao-dao-tao',
+//   'https://www.hust.edu.vn/thong-bao-khoa-hoc-cong-nghe',
+//   'https://www.hust.edu.vn/thong-bao-hop-tac-doi-ngoai-truyen-thong',
+//   'https://www.hust.edu.vn/thong-bao-to-chuc-nhan-su',
+//   'https://www.hust.edu.vn/to-chuc-nhan-su1',
+//   'https://www.hust.edu.vn/tuyen-dung',
+//   'https://www.hust.edu.vn/thong-bao-sinh-vien',
+//   'https://www.hust.edu.vn/thong-bao-khac',
+// ];
+
+// listHustLink.forEach((link) => {
+//   require('./services/hustService').worker(link);
+// });
