@@ -9,8 +9,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const followRedirects = require('follow-redirects');
 
-followRedirects.maxRedirects = 10;
-followRedirects.maxBodyLength = 500 * 1024 * 1024 * 1024;
+// followRedirects.maxBodyLength = 100 * 1024 * 1024;
 
 const logger = require('morgan');
 const cors = require('cors');

@@ -2,7 +2,7 @@
 const axios = require('axios');
 require('dotenv').config();
 
-// const { ARTICLE_SERVICE_DOMAIN } = process.env;
+const { ARTICLE_SERVICE_DOMAIN } = process.env;
 
 const splitSentences = async (text) => {
   try {

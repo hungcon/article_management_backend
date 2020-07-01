@@ -4,7 +4,7 @@
 /* eslint-disable camelcase */
 
 const { Buffer } = require('buffer');
-const axios = require('axios');
+const fetch = require('node-fetch');
 const FormData = require('form-data');
 const { get_byte } = require('./util');
 
@@ -76,16 +76,19 @@ async function concatByLink({ links, articleId }) {
     const bytes = concatWav(list_byte_array);
     const formData = new FormData();
     formData.append('file', bytes, { filename: `${articleId}.wav` });
-    const options = {
-      method: 'POST',
-      url: `${process.env.UPLOAD_SERVICE_DOMAIN}/api/v1/uploads/file?fileName=${articleId}.wav`,
-      headers: formData.getHeaders(),
-      data: formData,
-    };
-    const { data } = await axios(options);
+    const response = await fetch(
+      `${process.env.UPLOAD_SERVICE_DOMAIN}/api/v1/uploads/file?fileName=${articleId}.wav`,
+      {
+        method: 'POST',
+        headers: formData.getHeaders(),
+        body: formData,
+      },
+    );
+    const data = await response.json();
     const filePath = data.result.link.replace(/\\/g, '/');
     return filePath;
   } catch (error) {
+    console.log(error);
     return '';
   }
 }
