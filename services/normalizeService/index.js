@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 const axios = require('axios');
-// const article = require('../crawlService/article');
 require('dotenv').config();
+
+// const { ARTICLE_SERVICE_DOMAIN } = process.env;
 
 const splitSentences = async (text) => {
   try {
@@ -25,7 +26,7 @@ const splitSentences = async (text) => {
 const getAllophones = async (text, paragraphId, sentenceId, appId, bitRate) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
+      `${ARTICLE_SERVICE_DOMAIN}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -43,7 +44,7 @@ const getAllophones = async (text, paragraphId, sentenceId, appId, bitRate) => {
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
+        call_back: `${ARTICLE_SERVICE_DOMAIN}/get-allophones?paragraphId=${paragraphId}&sentenceId=${sentenceId}`,
       },
     });
     return data;
@@ -64,7 +65,7 @@ const getAudioSentenceLink = async (
 ) => {
   try {
     console.log(
-      `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
+      `${ARTICLE_SERVICE_DOMAIN}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
     );
     const { data } = await axios({
       method: 'POST',
@@ -80,7 +81,7 @@ const getAudioSentenceLink = async (
         input_type: 'ALLOPHONES',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'AUDIO',
-        call_back: `${CALLBACK_URL}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
+        call_back: `${ARTICLE_SERVICE_DOMAIN}/get-audio-url?articleId=${articleId}&paragraphId=${paragraphId}&paragraphIndex=${paragraphIndex}&sentenceId=${sentenceId}`,
       },
     });
     return data;
@@ -101,7 +102,7 @@ const getNormalizeWord = async (
 ) => {
   word = escape(word);
   console.log(
-    `${CALLBACK_URL}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+    `${ARTICLE_SERVICE_DOMAIN}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
   );
   try {
     const { data } = await axios({
@@ -119,7 +120,7 @@ const getNormalizeWord = async (
         input_type: 'TEXT',
         request_id: 'dec0f360-959e-11ea-b171-9973230931a1',
         output_type: 'ALLOPHONES',
-        call_back: `${CALLBACK_URL}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
+        call_back: `${ARTICLE_SERVICE_DOMAIN}/get-allophones-of-words?articleId=${articleId}&sentenceId=${id}&orig=${word}&type=${type}&index=${index}`,
       },
     });
     return data;

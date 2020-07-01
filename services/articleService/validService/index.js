@@ -333,14 +333,15 @@ const syntheticArticle = async (articleId, voiceSelect) => {
         await Article.findOneAndUpdate({ _id: articleId }, { status: 7 });
         console.log('Chuyển trạng thái bài báo sang chuyển audio lỗi');
         await Audio.deleteMany({ articleId });
+      } else {
+        await Article.findOneAndUpdate({ _id: articleId }, { status: 8 });
+        console.log('Chuyển trạng thái bài báo sang đã chuyển audio');
+        await Article.findOneAndUpdate(
+          { _id: articleId },
+          { $set: { linkAudio: filePath } },
+        );
+        await Audio.deleteMany({ articleId });
       }
-      await Article.findOneAndUpdate({ _id: articleId }, { status: 8 });
-      console.log('Chuyển trạng thái bài báo sang đã chuyển audio');
-      await Article.findOneAndUpdate(
-        { _id: articleId },
-        { $set: { linkAudio: filePath } },
-      );
-      await Audio.deleteMany({ articleId });
     } else {
       await Article.findOneAndUpdate({ _id: articleId }, { status: 7 });
       console.log('Chuyển trạng thái bài báo sang chuyển audio lỗi');
