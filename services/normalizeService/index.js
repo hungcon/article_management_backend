@@ -34,7 +34,7 @@ const getAllophones = async (text, paragraphId, sentenceId, appId, bitRate) => {
       timeout: 10 * 1000,
       data: {
         function_call_invoke:
-          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
+          'arn:aws:lambda:ap-southeast-1:063332792662:function:serverless-tts-vbee-2020-06-03-tts',
         input_text: text,
         rate: 1,
         voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
@@ -110,7 +110,7 @@ const getNormalizeWord = async (
       url: 'http://baonoi-tts.vbeecore.com/api/v1/tts',
       data: {
         function_call_invoke:
-          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-tts-vbee-2020-04-26-tts',
+          'arn:aws:lambda:ap-southeast-1:063332792662:function:serverless-tts-vbee-2020-06-03-tts',
         input_text: expansion,
         rate: 1,
         voice: 'vbee-tts-voice-hn_male_manhdung_news_48k-h',
