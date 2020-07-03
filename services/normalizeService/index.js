@@ -12,7 +12,7 @@ const splitSentences = async (text) => {
       timeout: 10 * 1000,
       data: {
         function_call_invoke:
-          'arn:aws:lambda:ap-southeast-1:279297658413:function:serverless-split-release-hello',
+          'arn:aws:lambda:ap-southeast-1:063332792662:function:serverless-split-release-hello',
         text,
         input_text: 'A',
       },
