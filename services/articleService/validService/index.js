@@ -46,6 +46,7 @@ const getValidArticles = async (website, category, date, status) => {
     website: 1,
     category: 1,
     status: 1,
+    title: 1,
     _id: 1,
   })
     .populate({
