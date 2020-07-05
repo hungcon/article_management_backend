@@ -42,7 +42,12 @@ const getValidArticles = async (website, category, date, status) => {
     condition.status = status;
   }
   console.log(condition);
-  articles = await Article.find(condition)
+  articles = await Article.find(condition, {
+    website: 1,
+    category: 1,
+    status: 1,
+    _id: 1,
+  })
     .populate({
       path: 'website',
       model: Website,
