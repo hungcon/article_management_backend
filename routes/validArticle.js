@@ -46,7 +46,6 @@ router.post(
   asyncMiddleware(validArticleController.syntheticArticle),
 );
 
-
 router.post(
   '/deny-article',
   asyncMiddleware(validArticleController.denyArticle),

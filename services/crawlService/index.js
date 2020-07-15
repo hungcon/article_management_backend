@@ -116,7 +116,7 @@ const crawlArticle = async (articleInfo, articleConfiguration) => {
 };
 
 const saveArticle = () => {
-  const CHECK_QUEUE_LINKS_TIME = 10 * 60 * 1000;
+  const CHECK_QUEUE_LINKS_TIME = 7 * 60 * 1000;
   // const CHECK_QUEUE_LINKS_TIME = 30 * 1000;
   setInterval(() => {
     if (QUEUE_LINKS.length && !RUNNING_WORKER_FLAG) {
@@ -128,7 +128,7 @@ const saveArticle = () => {
 const breakTime = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const worker = async () => {
-  const BREAK_TIME = 10 * 60 * 1000;
+  const BREAK_TIME = 7 * 60 * 1000;
   // const BREAK_TIME = 30 * 1000;
   try {
     RUNNING_WORKER_FLAG = true;

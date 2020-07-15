@@ -48,6 +48,7 @@ const getValidArticles = async (website, category, date, status) => {
     status: 1,
     title: 1,
     _id: 1,
+    link: 1,
   })
     .populate({
       path: 'website',
@@ -56,7 +57,8 @@ const getValidArticles = async (website, category, date, status) => {
     .populate({
       path: 'category',
       model: Category,
-    });
+    })
+    .sort({ createdAt: -1 });
   return articles;
 };
 
